@@ -9,10 +9,10 @@
    Themes only change CSS variables (+ a few structural overrides at the bottom).
    ============================================================ */
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;overflow:hidden}
+html,body{margin:0;height:100dvh;overflow:hidden}
 html{background:var(--bg);color:var(--text);font-family:var(--font);color-scheme:dark}
 html[data-mode=light]{color-scheme:light}
-body{position:fixed;inset:0;background:#000;overscroll-behavior:none;-webkit-tap-highlight-color:transparent;font-family:var(--font)}
+body{position:fixed;inset:0;background:var(--bg);overscroll-behavior:none;-webkit-tap-highlight-color:transparent;font-family:var(--font)}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0;text-align:inherit}
 input,textarea,select{font:inherit;color:inherit}
 :focus-visible{outline:.2em solid var(--accent);outline-offset:.12em}
