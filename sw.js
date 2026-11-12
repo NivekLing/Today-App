@@ -1,5 +1,5 @@
 // Network-first service worker: always picks up new deploys, falls back to cache when offline.
-const CACHE = "today-v7";
+const CACHE = "today-v7.1";
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(["./", "index.html", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png"])).then(() => self.skipWaiting()));
 });
