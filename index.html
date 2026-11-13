@@ -2352,21 +2352,29 @@ let _rz; addEventListener("resize", () => { clearTimeout(_rz); if (S.kb && inner
 
 /* ---- keyboard awareness: hide the nav bar and never re-render while typing ---- */
 const KBGAP = 10;
+let KBX = null;   /* the composer / quick-note currently lifted above the keyboard */
+function kbRelease() { if (!KBX) return; const { box, sp } = KBX; box.removeAttribute("style"); if (KBX.st) box.setAttribute("style", KBX.st); box.classList.remove("kbup"); sp && sp.remove(); KBX = null; }
+function kbLift(box) {
+  if (KBX && KBX.box === box) return; kbRelease();
+  const r = box.getBoundingClientRect(), cs = getComputedStyle(box), sp = document.createElement("div");
+  sp.style.cssText = `height:${r.height}px;margin:${cs.marginTop} 0 ${cs.marginBottom};flex:none;pointer-events:none`; box.parentNode.insertBefore(sp, box);
+  KBX = { box, sp, st: box.getAttribute("style"), l: r.left, w: r.width, h: r.height };
+  box.classList.add("kbup"); box.style.cssText += `;position:fixed!important;left:${r.left}px;width:${r.width}px;margin:0!important;z-index:60;transform:none;transition:none!important;bottom:auto!important`;
+}
+function kbPlace() { if (!KBX) return; const vv = window.visualViewport; if (!vv) return; const want = Math.max(vv.offsetTop + 4, vv.offsetTop + vv.height - KBX.h - KBGAP), bx = KBX.box; bx.style.top = want + "px"; const got = bx.getBoundingClientRect().top; if (Math.abs(got - want) > 0.5) bx.style.top = want + (want - got) + "px"; const gl = bx.getBoundingClientRect().left; if (Math.abs(gl - KBX.l) > 0.5) bx.style.left = KBX.l + (KBX.l - gl) + "px"; }
 function updKb() {
   const vv = window.visualViewport, root = document.documentElement, sc = S.scale || 1; if (!vv) return;
   const full = Math.max(S._h || 0, innerHeight), kbs = Math.max(0, full - vv.height - vv.offsetTop);
   root.style.setProperty("--kbh", kbs / sc + "px");
   const el = document.activeElement; if (!S.kb || !el || !isTyping()) return;
-  const bottomLimit = vv.offsetTop + vv.height - KBGAP * sc;   /* keyboard top (screen px) minus gap */
   const box = el.closest(".composer,.qnote");
-  if (box) { box.style.transform = ""; const br = box.getBoundingClientRect(); const d = br.bottom - bottomLimit; if (kbs > 80 && d > 0) { box.style.transform = `translateY(${-d / sc}px)`; box.classList.add("kbup"); } else box.classList.remove("kbup"); return; }
-  /* any other field: scroll its container just enough that it is fully above the keyboard */
-  const r = el.getBoundingClientRect(); const d = r.bottom - bottomLimit;
+  if (box) { if (kbs > 80 || KBX) { kbLift(box); kbPlace(); } return; }
+  const bottomLimit = vv.offsetTop + vv.height - KBGAP * sc, r = el.getBoundingClientRect(), d = r.bottom - bottomLimit;
   if (kbs > 80 && d > 0) { let p = el.parentElement; while (p && p !== document.body) { const o = getComputedStyle(p).overflowY; if ((o === "auto" || o === "scroll") && p.scrollHeight > p.clientHeight) break; p = p.parentElement; } if (p && p !== document.body) { const sb = p.style.scrollBehavior; p.style.scrollBehavior = "smooth"; p.scrollTop += d / sc + 6; setTimeout(() => { p.style.scrollBehavior = sb; }, 400); } }
 }
 if (window.visualViewport) { visualViewport.addEventListener("resize", () => { if (S.kb) updKb(); }); visualViewport.addEventListener("scroll", () => { if (S.kb) updKb(); }); }
-document.addEventListener("focusin", (e) => { if (isTyping()) { S._h = innerHeight; S.kb = true; document.documentElement.classList.add("kb"); const el = e.target; setTimeout(updKb, 60); setTimeout(updKb, 250); setTimeout(updKb, 520); } });
-document.addEventListener("focusout", () => { setTimeout(() => { if (!isTyping()) { S.kb = false; document.documentElement.classList.remove("kb"); document.documentElement.style.setProperty("--kbh", "0px"); $$(".composer,.qnote").forEach((b) => { b.style.transform = ""; b.classList.remove("kbup"); }); if (S.pend) { S.pend = false; render(); } } }, 90); });
+document.addEventListener("focusin", (e) => { if (isTyping()) { S._h = innerHeight; S.kb = true; document.documentElement.classList.add("kb"); const el = e.target; { const bx = el.closest && el.closest(".composer,.qnote"); if (bx) { kbLift(bx); kbPlace(); } } setTimeout(updKb, 60); setTimeout(updKb, 250); setTimeout(updKb, 520); } });
+document.addEventListener("focusout", () => { setTimeout(() => { if (!isTyping()) { S.kb = false; document.documentElement.classList.remove("kb"); document.documentElement.style.setProperty("--kbh", "0px"); kbRelease(); if (S.pend) { S.pend = false; render(); } } }, 90); });
 
 /* ---- delegation ---- */
 document.addEventListener("click", (e) => {
