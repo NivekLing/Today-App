@@ -1284,9 +1284,9 @@ html.kb .tabapp .sheet-body{padding-bottom:1em}
 .sheet.navedit .icon-btn.ok{background:var(--accent);color:var(--on-accent)}
 .sheet.tabapp.calc .sheet-body{padding-bottom:calc(var(--dockh,5em) + .8em)}
 /* splash */
-#splash{position:absolute;inset:0;z-index:400;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;animation:spin .4s ease both;pointer-events:all}
+#splash{position:absolute;inset:0;z-index:400;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;animation:spfade .4s ease both;pointer-events:all}
 #splash.out{animation:spout .4s ease forwards;pointer-events:none}
-@keyframes spin{from{opacity:0}}@keyframes spout{to{opacity:0}}
+@keyframes spfade{from{opacity:0}}@keyframes spout{to{opacity:0}}
 .sp-in{display:flex;flex-direction:column;align-items:center;gap:1em;margin-top:12vh;animation:spup .7s cubic-bezier(.3,1.3,.5,1) both}
 @keyframes spup{from{opacity:0;transform:translateY(16px) scale(.9)}}
 .sp-dog{width:7.5em;height:7.5em;overflow:visible}.sp-bob{animation:spbob .9s ease-in-out infinite alternate;transform-origin:60px 100px}@keyframes spbob{to{transform:translateY(-5px) rotate(2deg)}}
@@ -1312,6 +1312,58 @@ html.kb .tabapp .sheet-body{padding-bottom:1em}
 .sheet.tabapp{padding-top:2em}.m-phone .sheet.tabapp{padding-top:2.45em}.m-tablet .sheet.tabapp,.m-desktop .sheet.tabapp{padding-top:2.4em}
 .tabapp .sheet-head{min-height:2.75em}
 .avgrid{padding:.2em}
+/* r17: every app title sits at the same height as the Notes title */
+.m-phone .sheet,.m-tablet .sheet,.m-desktop .sheet,.m-phone .sheet.tabapp,.m-tablet .sheet.tabapp,.m-desktop .sheet.tabapp{padding-top:0}
+.m-phone .sheet-head,.m-tablet .sheet-head,.m-desktop .sheet-head,.m-phone .tabapp .sheet-head,.m-tablet .tabapp .sheet-head,.m-desktop .tabapp .sheet-head{padding-top:var(--sat);min-height:calc(2.75em + var(--sat))}
+.m-compact .sheet.tabapp,.m-compact .sheet{padding-top:1.2em}.m-compact .tabapp .sheet-head{min-height:2.75em}
+/* news theme: keep the double rule below the status bar */
+html[data-theme=news] .view{margin-top:.6em}
+.m-phone[data-theme=news] .view,.m-tablet[data-theme=news] .view,.m-desktop[data-theme=news] .view,html[data-theme=news] .m-phone .view,html[data-theme=news] .m-tablet .view,html[data-theme=news] .m-desktop .view{margin-top:calc(var(--sat) - .3em);padding-top:.9em}
+/* AI composer sits a little higher when the keyboard hides the nav bar */
+html.kb .composer{margin-bottom:20px}
+/* ============ r17 music: full player <-> pill ============ */
+.msheet{container-type:size;--mpr:3em;--mh:3.9em}
+.msheet.tabapp{--mb:calc(var(--dockh,5em) + .6em)}
+.msheet:not(.tabapp){--mb:calc(.8em + env(safe-area-inset-bottom,0px))}
+html[data-theme=minimal] .msheet,html[data-theme=news] .msheet,html[data-theme=android4] .msheet,html[data-theme=wp] .msheet,html[data-theme=material] .msheet,html[data-theme=sense] .msheet,html[data-theme=ios6] .msheet{--mpr:var(--rc)}
+.msheet .sheet-head{position:relative;z-index:4}
+.msheet.hasmini .sheet-body{padding-bottom:calc(var(--mb) + var(--mh) + 1em)}
+.mcin{min-height:100%}
+.mplayer{position:absolute;z-index:3;overflow:hidden;background:var(--bg);color:var(--text);left:0;right:0;top:0;bottom:0;border-radius:0;
+  transition:top .5s cubic-bezier(.32,.72,0,1),bottom .5s cubic-bezier(.32,.72,0,1),left .5s cubic-bezier(.32,.72,0,1),right .5s cubic-bezier(.32,.72,0,1),border-radius .5s cubic-bezier(.32,.72,0,1),box-shadow .5s,transform .5s cubic-bezier(.32,.72,0,1);touch-action:none}
+.mplayer.mini{top:calc(100% - var(--mb) - var(--mh));bottom:var(--mb);left:.8em;right:.8em;border-radius:var(--mpr);background:var(--surface-2,var(--surface));border:var(--cb,0);box-shadow:var(--csh,0 .5em 1.6em rgba(0,0,0,.28));-webkit-backdrop-filter:var(--bf,none);backdrop-filter:var(--bf,none);cursor:pointer}
+.mplayer.mini{background:color-mix(in srgb,var(--surface-2,var(--bg)) 92%,var(--bg))}
+.mpfull{position:absolute;top:0;left:50%;width:100cqw;height:100cqh;margin-left:-50cqw;box-sizing:border-box;padding:var(--mhh,3.4em) max(1.2em,env(safe-area-inset-right)) calc(var(--mb) + .2em) max(1.2em,env(safe-area-inset-left));display:flex;flex-direction:column;opacity:1;transition:opacity .3s .12s,transform .5s cubic-bezier(.32,.72,0,1)}
+.msheet:not(.tabapp) .mpfull{padding-bottom:calc(1em + env(safe-area-inset-bottom,0px))}
+.mplayer.mini .mpfull{opacity:0;transform:translateY(1.2em) scale(.96);pointer-events:none;transition:opacity .18s,transform .5s cubic-bezier(.32,.72,0,1)}
+.mgrab{flex:none;display:block;margin:0 auto .5em;width:2.6em;height:.28em;border-radius:1em;background:var(--line);opacity:.8}
+.mpmini{position:absolute;inset:0;display:flex;align-items:center;gap:.8em;padding:0 .5em 0 .55em;opacity:0;pointer-events:none;transition:opacity .2s}
+.mplayer.mini .mpmini{opacity:1;pointer-events:auto;transition:opacity .3s .2s}
+.mpa{flex:none;height:calc(var(--mh) - 1em);aspect-ratio:1;border-radius:50%;background:var(--surface) center/cover;display:grid;place-items:center;color:var(--muted);box-shadow:0 .15em .5em rgba(0,0,0,.3)}.mpa svg{width:45%;height:45%}
+.mpa.spin{animation:spin 6s linear infinite}.mpa.paused{animation-play-state:paused}
+.mpt{flex:1;min-width:0;display:flex;flex-direction:column;text-align:left}.mpt b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mpt small{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mpp{width:2.8em;height:2.8em}.mpp svg{width:1.5em;height:1.5em}
+/* full player layout: art up top, title + controls low (easy to reach) */
+.mpf{flex:1;min-height:0;display:flex;flex-direction:column;gap:.6em;width:100%;max-width:34em;margin:0 auto}
+.mpart{flex:1;min-height:0;container-type:size;display:grid;place-items:center}
+.mpart .mcover{width:min(94cqw,94cqh,26em)}
+.mpbot{flex:none;display:flex;flex-direction:column;gap:.7em;padding-bottom:.4em}
+.mpbot .mtitle{margin-top:.4em}.mpbot .mtitle b{font-size:1.35em}
+.mpbot .mctl2{margin:.1em 0}
+.mfoot{display:flex;align-items:center}.mfoot .sp{flex:1}
+@media (orientation:landscape){
+.mpf{flex-direction:row;align-items:center;gap:2em;max-width:none}
+.mpart{flex:1;height:100%}.mpbot{flex:1;justify-content:center;max-width:26em}
+.mpfull{padding-top:calc(var(--mhh,3em) + .2em)}
+}
+.m-compact .mpart .mcover{width:min(94cqw,94cqh,26em)}
+/* landscape: keep clear of the notch/cutout but use the full height */
+@media (orientation:landscape){
+.m-phone .msheet,.m-tablet .msheet{--sat:max(env(safe-area-inset-top,0px),.4em);padding-left:max(1em,env(safe-area-inset-left));padding-right:max(1em,env(safe-area-inset-right))}
+.m-phone .msheet .sheet-head,.m-tablet .msheet .sheet-head{margin-bottom:.4em;min-height:calc(2.5em + var(--sat))}
+.msheet .mplayer.mini{left:max(.8em,env(safe-area-inset-left));right:max(.8em,env(safe-area-inset-right))}
+}
+.mcin.pg-r,.mcin.pg-l,.mcin.pg-f{will-change:transform,opacity}
 </style></head><body>
 <main class="page"><section class="stage"><div class="device m-compact" id="device" role="application" aria-label="Today"><div class="view" id="view"></div><div class="dock" id="dock"></div><div id="overlay"></div><div id="modal"></div><div class="toast" id="toast" role="status" aria-live="polite"></div></div></section></main>
 <script>const TEA="<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 11h11v2.5a5.5 5.5 0 0 1-5.5 5.5A5.5 5.5 0 0 1 6 13.5z\" fill=\"#E7B77A\" stroke=\"#8B5A2B\" stroke-width=\"1.6\"/><path d=\"M17 12h1.2a2.3 2.3 0 0 1 0 4.6h-2\" stroke=\"#8B5A2B\" stroke-width=\"1.6\"/><path d=\"M3.5 20.8h16\" stroke=\"#8B5A2B\" stroke-width=\"1.6\"/><path d=\"M9.2 3.5c-1 1.4 1 2.2 0 3.6M13.2 3.5c-1 1.4 1 2.2 0 3.6\" stroke=\"#9AA3AE\" stroke-width=\"1.4\"/></svg>",LANT="<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 1.5v3\" stroke=\"#B8860B\" stroke-width=\"1.6\" stroke-linecap=\"round\" fill=\"none\"/><rect x=\"8\" y=\"3.5\" width=\"8\" height=\"2.2\" rx=\".8\" fill=\"#E9B23A\"/><ellipse cx=\"12\" cy=\"12\" rx=\"7.5\" ry=\"6.6\" fill=\"#D7263D\"/><path d=\"M12 5.4c-3 1.6-3 11.4 0 13.2M12 5.4c3 1.6 3 11.4 0 13.2M5 12h14\" stroke=\"#9B1425\" stroke-width=\"1\" fill=\"none\"/><rect x=\"8\" y=\"18.3\" width=\"8\" height=\"2.2\" rx=\".8\" fill=\"#E9B23A\"/><path d=\"M10 20.5v2.5M12 20.5v3M14 20.5v2.5\" stroke=\"#E9B23A\" stroke-width=\"1.2\" stroke-linecap=\"round\"/></svg>",FUJI="<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"18.5\" cy=\"6.5\" r=\"2.6\" fill=\"#E5484D\"/><path d=\"M1.5 20.5L9.4 7.5h5.2l7.9 13z\" fill=\"#5B7DB1\"/><path d=\"M9.4 7.5h5.2l1.9 3.1-2.2-.9-1.9 1.5-1.9-1.5-2.2.9z\" fill=\"#fff\"/></svg>";
@@ -2578,7 +2630,7 @@ function goPage(pos) {
 A.tab = (el) => goPage(+el.dataset.v);
 
 /* ---- render ---- */
-function tabAppHTML(id) { const a = APPS[id], o = a && SHEETS[a.sheet] ? SHEETS[a.sheet]() : { title: "", body: "" }; return `<div class="sheet tabapp ${o.cls || ""}"><div class="sheet-head"><h2>${esc(o.title)}</h2>${o.right || ""}</div><div class="sheet-body">${o.body}</div></div>`; }
+function tabAppHTML(id) { const a = APPS[id], o = a && SHEETS[a.sheet] ? SHEETS[a.sheet]() : { title: "", body: "" }; return `<div class="sheet tabapp ${o.cls || ""}"><div class="sheet-head"><h2>${esc(o.title)}</h2>${o.right || ""}</div><div class="sheet-body">${o.body}</div>${o.over || ""}</div>`; }
 function pageHTML() { return S.cv ? cvView() : S.tab === 4 ? tabAppHTML(S.tapp) : [homeView, notesView, aiView, profileView][S.tab](); }
 const setScroll = (el, y) => { const b = el.style.scrollBehavior; el.style.scrollBehavior = "auto"; el.style.scrollSnapType = "none"; el.scrollTop = y; requestAnimationFrame(() => { el.style.scrollBehavior = b; el.style.scrollSnapType = ""; }); };
 function render() {
@@ -2597,7 +2649,7 @@ function render() {
   const top = S.stack[S.stack.length - 1], ov = $("#overlay"), depth = S.stack.length, prev = S._depth || 0, sk = top ? top.id + ":" + depth : "";
   const old = $(".sheet:not(.leave)", ov), sb = $(".sheet-body", ov), ss = sb && S._sk === sk ? sb.scrollTop : 0;
   const pop = S.pop && S.tab === 2 && !S.cv && !top ? provPopover() : "";
-  if (top) { const o = SHEETS[top.id](top.arg); ov.innerHTML = `<div class="sheet in-wrap ${o.cls || ""} ${depth > prev ? "enter" : ""}" role="dialog" aria-modal="true" aria-label="${esc(o.title)}"><div class="sheet-head"><button class="icon-btn" data-a="back" aria-label="${t("Back")}">${I("chevron-left")}</button><h2>${esc(o.title)}</h2>${o.right || ""}</div><div class="sheet-body">${o.body}</div></div>${ringView()}`; const nb = $(".sheet-body", ov); if (nb && ss) setScroll(nb, ss); }
+  if (top) { const o = SHEETS[top.id](top.arg); ov.innerHTML = `<div class="sheet in-wrap ${o.cls || ""} ${depth > prev ? "enter" : ""}" role="dialog" aria-modal="true" aria-label="${esc(o.title)}"><div class="sheet-head"><button class="icon-btn" data-a="back" aria-label="${t("Back")}">${I("chevron-left")}</button><h2>${esc(o.title)}</h2>${o.right || ""}</div><div class="sheet-body">${o.body}</div>${o.over || ""}</div>${ringView()}`; const nb = $(".sheet-body", ov); if (nb && ss) setScroll(nb, ss); }
   else ov.innerHTML = pop + ringView();
   if (depth < prev && old) { const c = old.cloneNode(true); c.classList.remove("enter"); c.classList.add("leave"); ov.appendChild(c); setTimeout(() => c.remove(), 420); }
   S._depth = depth; S._sk = sk;
@@ -2707,7 +2759,7 @@ function overCheck() {
 }
 const sortable = (target) => { const it = itemOf(target); if (!it) return null; const k = it.parentElement.dataset.sort; return { it, edit: k === "widgets" ? S.homeEdit : VERTK.includes(k) ? true : S.profEdit, k }; };
 document.addEventListener("pointerdown", (e) => {
-  S.lastAct = Date.now(); if (S.away && e.clientY > innerHeight * 0.86) showDock();
+  S.lastAct = Date.now();
   if (e.button > 0 || drag) return;
   const cp = e.target.closest("[data-longpress]");
   if (cp && !e.target.closest("[data-a]")) { lpx = e.clientX; lpy = e.clientY; lp = setTimeout(() => { lp = null; S._suppress = true; if (navigator.vibrate) navigator.vibrate(12); openSheet(cp.dataset.longpress); }, 600); return; }
@@ -2742,11 +2794,17 @@ let tg = null;
 document.addEventListener("touchstart", (e) => { S.lastAct = Date.now(); const t0 = e.touches[0]; tg = { x: t0.clientX, y: t0.clientY, done: false, ok: e.touches.length === 1 && !e.target.closest(NOSWIPE) && !S.stack.length && !S.homeEdit && !S.profEdit && !(S.tab === 1 && S.nview === "edit") && !$("#modal.on") }; }, { passive: true });
 document.addEventListener("touchmove", (e) => {
   if (!tg || tg.done) return; const t0 = e.touches[0], dx = t0.clientX - tg.x, dy = t0.clientY - tg.y;
-  if (S.away && dy < -26 && Math.abs(dy) > Math.abs(dx)) { showDock(); }
+  if (S.away && dy < -22 && Math.abs(dy) > Math.abs(dx) * 0.8) { showDock(); tg.done = true; return; }
   if (!tg.ok) return;
   if (Math.abs(dx) > 64 && Math.abs(dx) > Math.abs(dy) * 1.6) { tg.done = true; goPage(curPos() + (dx < 0 ? 1 : -1)); }
 }, { passive: true });
 document.addEventListener("touchend", () => { tg = null; }, { passive: true });
+document.addEventListener("touchcancel", () => { tg = null; }, { passive: true });
+/* swipe up (pointer / mouse / pen) also brings the nav bar back */
+{ let py = null, px = 0; document.addEventListener("pointerdown", (e) => { py = e.pointerType === "touch" ? null : e.clientY; px = e.clientX; }, true);
+  document.addEventListener("pointermove", (e) => { if (py !== null && S.away && e.clientY - py < -40 && Math.abs(e.clientY - py) > Math.abs(e.clientX - px)) { py = null; showDock(); } }, true);
+  document.addEventListener("pointerup", () => { py = null; }, true);
+  document.addEventListener("wheel", (e) => { if (S.away && e.deltaY > 12) showDock(); }, { passive: true }); }
 
 /* ---- keys: keyboard, RG Rotate buttons, gamepad ---- */
 const FOC = 'button:not([disabled]),[tabindex="0"],input:not([type=hidden]),textarea,select,a[href]';
@@ -2901,7 +2959,7 @@ SHEETS.cvset = () => {
 })();
 
 /* ---------- Music: library stored in IndexedDB, ID3 tags, albums + playlist ---------- */
-const M = { files: [], cur: null, q: [], base: [], playing: false, view: "player", tab: "songs", sel: null, shuffle: false, repeat: "off", ready: false };
+const M = { files: [], cur: null, q: [], base: [], playing: false, view: "lib", exp: false, from: null, dir: 0, tab: "songs", sel: null, shuffle: false, repeat: "off", ready: false };
 S.music = M;
 let _mdb = null;
 const mdb = () => new Promise((res) => { if (_mdb) return res(_mdb); try { const r = indexedDB.open("today-music", 1); r.onupgradeneeded = () => r.result.createObjectStore("f", { keyPath: "id" }); r.onsuccess = () => res((_mdb = r.result)); r.onerror = () => res(null); } catch { res(null); } });
@@ -2970,7 +3028,7 @@ const AUD = /\.(mp3|m4a|aac|wav|flac|ogg|oga|opus|wma|mp4)$/i;
 async function mAddFiles(fl) {
   toast(t("Adding songs…")); fl = fl.filter((f) => /^audio\//.test(f.type) || AUD.test(f.name)); const first = M.files.length;
   for (const f of fl) { const tg = await readTags(f), rec = { id: "m" + uid(), at: Date.now() + M.files.length, name: f.name.replace(/\.[^.]+$/, ""), title: tg.title, artist: tg.artist, album: tg.album, cover: tg.cover || null, blob: f }; await dbDo("readwrite", (st) => st.put(rec)); M.files.push(mkTrack(rec)); }
-  M.view = "player"; toast(tn(fl.length, "{0} song added", "{0} songs added")); if (!M.cur && M.files[first]) mPlayId(M.files[first].id, M.files.map((x) => x.id)); else render();
+  if (M.view === "player") M.view = "lib"; toast(tn(fl.length, "{0} song added", "{0} songs added")); if (!M.cur && M.files[first]) mPlayId(M.files[first].id, M.files.map((x) => x.id)); else render();
 }
 /* ---- playback + queue ---- */
 const mAudio = () => { if (!S.audio) { const a = (S.audio = new Audio()); a.addEventListener("ended", () => { if (M.repeat === "one") { a.currentTime = 0; a.play(); } else mStep(1, true); }); a.addEventListener("pause", () => { M.playing = false; softRender(); }); a.addEventListener("play", () => { M.playing = true; softRender(); }); a.addEventListener("loadedmetadata", () => mpLive()); } return S.audio; };
@@ -2993,16 +3051,21 @@ A.mPick = (el) => mPlayId(el.dataset.id, M.ctx || null);
 A.mPlayAll = (el) => { const ids = ctxOf(); if (!ids.length) return; M.shuffle = el.dataset.v === "shuf"; mPlayId(M.shuffle ? shuf(ids)[0] : ids[0], ids); };
 A.mShuf = () => { M.shuffle = !M.shuffle; const cur = M.cur, base = M.base && M.base.length ? M.base : M.files.map((x) => x.id); M.q = M.shuffle ? [cur, ...shuf(base.filter((x) => x !== cur))].filter(Boolean) : [...base]; render(); };
 A.mRep = () => { M.repeat = M.repeat === "off" ? "all" : M.repeat === "all" ? "one" : "off"; render(); };
-A.mQueue = () => { M.view = "queue"; if (!S.stack.some((x) => x.id === "music")) openSheet("music"); else render(); };
-A.mOpenApp = () => { M.view = "player"; openSheet("music"); };
+const mHere = () => S.stack.some((x) => x.id === "music") || (S.tab === 4 && S.tapp === "music" && !S.cv);
+A.mQueue = () => { if (!mHere()) { M.view = "queue"; M.exp = false; M.from = null; openSheet("music"); } else mSet("queue", false); };
+A.mOpenApp = () => { if (["queue", "style", "player"].includes(M.view)) M.view = "lib"; M.exp = !!M.cur; M.from = null; if (mHere()) { mSet(M.view, !!M.cur); return; } openSheet("music"); };
 A.mQRm = (el) => { M.q = M.q.filter((x) => x !== el.dataset.id); render(); };
 function mFileInput() { let f = document.getElementById("mfile"); if (!f) { f = document.createElement("input"); f.type = "file"; f.id = "mfile"; f.multiple = true; f.hidden = true; f.accept = "audio/*,.mp3,.m4a,.aac,.wav,.flac,.ogg,.opus,.wma"; f.dataset.ch = "music"; document.body.appendChild(f); } return f; }
 A.mAdd = () => { mFileInput().click(); };
 /* ---- views ---- */
-A.mView = (el) => { M.view = el.dataset.v === M.view && ["lib", "style", "queue"].includes(M.view) ? "player" : el.dataset.v; M.sel = null; render(); };
-A.mTab = (el) => { M.tab = el.dataset.v; M.view = "lib"; render(); };
-A.mOpen = (el) => { M.sel = el.dataset.v; M.view = el.dataset.k; render(); };
-A.mBackLib = () => { M.view = "lib"; M.sel = null; render(); };
+const LIBV = ["lib", "album", "artist", "pl"];
+/* change what is shown (and whether the big player is up) with the player morphing between full screen and the pill */
+function mSet(v, exp, dir) { M.from = M.exp; M.dir = dir === undefined ? (v === M.view ? 0 : 2) : dir; M.view = v; M.exp = !!exp && !!M.cur; render(); mPlay(); }
+A.mView = (el) => { const v = el.dataset.v, inLib = v === "lib" && LIBV.includes(M.view); if (M.exp) { mSet(inLib ? M.view : v, false); return; } if (inLib || v === M.view) { if (M.cur) mSet(M.view, true); return; } M.sel = null; mSet(v, false); };
+A.mExpand = () => { if (Date.now() - (M.nc || 0) < 400) return; if (M.cur) mSet(M.view, true); };
+A.mTab = (el) => { const o = ["songs", "albums", "artists", "pl"], d = o.indexOf(el.dataset.v) - o.indexOf(M.tab || "songs"); M.tab = el.dataset.v; M.view = "lib"; M.sel = null; M.dir = d === 0 ? 0 : d > 0 ? 1 : -1; M.from = null; render(); mPlay(); };
+A.mOpen = (el) => { M.sel = el.dataset.v; M.view = el.dataset.k; M.dir = 1; M.from = null; render(); mPlay(); };
+A.mBackLib = () => { M.view = "lib"; M.sel = null; M.dir = -1; M.from = null; render(); mPlay(); };
 A.mSort = () => actionSheet(t("Sort by"), [["added", "Recently added"], ["title", "Title"], ["artist", "Artist"], ["album", "Album"]].map(([k, n]) => ({ label: t(n) + (msort() === k ? "  ✓" : ""), ic: "arrow-up-down", fn: () => { P.set.msort = k; save(); render(); } })));
 A.mCS = (el) => { P.set.mcs = el.dataset.v; save(); $$("[data-a=mCS]").forEach((b) => b.setAttribute("aria-checked", String(b === el))); render(); };
 const msort = () => P.set.msort || "added";
@@ -3053,7 +3116,7 @@ const trackRow = (f, ctxIds) => `<div class="lr trk ${f.id === M.cur ? "cur" : "
 const gridOf = (items, k) => `<div class="albg">${items.map((a) => `<button class="alb" data-a="mOpen" data-k="${k}" data-v="${esc(a.name)}">${k === "artist" ? `<div class="mcover ar" ${a.cover ? `style="background-image:url(${a.cover})"` : ""}>${a.cover ? "" : I("circle-user-round")}</div>` : mCover({ cover: a.cover }, "", "art")}<b>${esc(a.name)}</b><span>${k === "artist" ? "" : esc(a.artist || "") + " · "}${tn(a.tracks.length, "{0} song", "{0} songs")}</span></button>`).join("")}</div>`;
 const detailHead = (name, sub, cover, kind) => `<button class="link bk" data-a="mBackLib">${I("chevron-left")}<span>${t("Library")}</span></button><div class="mdh">${kind === "artist" ? `<div class="mcover ar" ${cover ? `style="background-image:url(${cover})"` : ""}>${cover ? "" : I("circle-user-round")}</div>` : mCover({ cover }, "", "art")}<div class="mdt"><b>${esc(name)}</b><span>${esc(sub)}</span></div></div><div class="mpa"><button class="pillbtn" data-a="mPlayAll" data-v="play">${I("play")}${t("Play")}</button><button class="pillbtn alt" data-a="mPlayAll" data-v="shuf">${I("shuffle")}${t("Shuffle")}</button></div>`;
 SHEETS.music = () => {
-  let body, v = M.view;
+  let body, v = M.view === "player" ? (M.view = "lib") : M.view;
   if (!M.files.length && !["style", "queue"].includes(v)) body = `<div class="empty">${t("Tap + to choose audio files on this device.")}<br>${t("Songs are kept on this device.")}</div>`;
   else if (v === "style") body = `<div class="lab">${t("Cover style")}</div><div class="cstyles">${MCS.map(([k, n]) => `<button class="cst" role="radio" aria-checked="${(P.set.mcs || "art") === k}" data-a="mCS" data-v="${k}">${mCover(mCur() || { id: "x", cover: "" }, "pv", k)}<span>${t(n)}</span></button>`).join("")}</div><div class="note">${t("Disc styles spin while a song plays. Album art is used as the label when a song has it.")}</div>`;
   else if (v === "queue") {
@@ -3077,9 +3140,9 @@ SHEETS.music = () => {
     const p = pls().find((x) => x.id === M.sel); if (!p) { M.view = "lib"; return SHEETS.music(); }
     const l = p.ids.map(mById).filter(Boolean); M.ctx = l.map((x) => x.id);
     body = detailHead(p.name, tn(l.length, "{0} song", "{0} songs"), l[0] && l[0].cover, "pl") + `<div class="mpa"><button class="pillbtn alt" data-a="mPlAdd">${I("plus")}${t("Add songs")}</button><button class="pillbtn alt" data-a="mPlMenu">${I("more")}</button></div>` + (l.length ? `<div class="grp">${l.map((f) => trackRow(f)).join("")}</div>` : `<div class="empty">${t("This playlist is empty.")}</div>`);
-  } else body = playerHTML();
+  } else body = "";
   const on = (k) => (v === k ? "acc" : "");
-  return { title: t("Music"), right: `<button class="icon-btn ${on("style")}" data-a="mView" data-v="style" aria-label="${t("Cover style")}">${I("palette")}</button><button class="icon-btn ${["lib", "album", "artist", "pl"].includes(v) ? "acc" : ""}" data-a="mView" data-v="lib" aria-label="${t("Library")}">${I("library")}</button><button class="icon-btn acc" data-a="mAdd" aria-label="${t("Add songs")}">${I("plus")}</button>`, body, cls: "msheet" };
+  return { title: t("Music"), right: `<button class="icon-btn ${M.exp ? "" : on("style")}" data-a="mView" data-v="style" aria-label="${t("Cover style")}">${I("palette")}</button><button class="icon-btn ${!M.exp && LIBV.includes(v) ? "acc" : ""}" data-a="mView" data-v="lib" aria-label="${t("Library")}">${I("library")}</button><button class="icon-btn acc" data-a="mAdd" aria-label="${t("Add songs")}">${I("plus")}</button>`, body: `<div class="mcin">${body}</div>`, over: mpLayer(), cls: "msheet" + (M.cur ? " hasmini" : "") };
 };
 function musicCard(sz = "s") {
   const f = mCur(), bt = `<button class="mb sm" data-a="mQueue" aria-label="${t("Up Next")}">${I("list-music")}</button>`;
@@ -3088,13 +3151,45 @@ function musicCard(sz = "s") {
   return `<div class="mcs" ${f.cover ? `style="background-image:url(${f.cover})"` : ""}><div class="mcs-in"><b class="ell">${esc(f.title)}</b><span class="ell">${esc(f.artist || "")}</span></div><button class="mb pp mcs-pp" data-a="mToggle">${I(M.playing ? "pause" : "play")}</button><button class="mb sm mcs-q" data-a="mQueue" aria-label="${t("Up Next")}">${I("list-music")}</button></div>`;
 }
 
+
+/* ---- the player layer: full screen, or a pill that sits above the nav bar ---- */
+function mpFull(f) {
+  const play = M.playing;
+  return `<div class="mpf"><div class="mpart">${mCover(f, "")}</div><div class="mpbot"><div class="mtitle"><b>${esc(f.title)}</b><span>${esc([f.artist, f.album].filter(Boolean).join(" · ") || t("Unknown artist"))}</span></div>
+  <div class="mbar"><input type="range" class="mprog" data-lv="mp" data-k="bar" data-in="mseek" min="0" max="1000" value="0" aria-label="${t("Progress")}"><div class="mtimes"><span data-lv="mp" data-k="cur">0:00</span><span data-lv="mp" data-k="dur">-0:00</span></div></div>
+  <div class="mctl2"><button class="mb" data-a="mPrev" aria-label="${t("Previous")}">${I("skip-back")}</button><button class="mb pp" data-a="mToggle" aria-label="${t(play ? "Pause" : "Play")}">${I(play ? "pause" : "play")}</button><button class="mb" data-a="mNext" aria-label="${t("Next")}">${I("skip-forward")}</button></div>
+  <div class="mfoot"><button class="mb sm ${M.shuffle ? "on" : ""}" data-a="mShuf" aria-label="${t("Shuffle")}" aria-pressed="${!!M.shuffle}">${I("shuffle")}</button><button class="mb sm ${M.repeat !== "off" ? "on" : ""}" data-a="mRep" aria-label="${t("Repeat")}">${I(M.repeat === "one" ? "repeat-1" : "repeat")}</button><span class="sp"></span><button class="mb sm" data-a="mQueue" aria-label="${t("Up Next")}">${I("list-music")}</button></div></div></div>`;
+}
+function mpLayer() {
+  const f = mCur(); if (!f) return ""; const st = M.from != null ? M.from : M.exp, play = M.playing, sp = (P.set.mcs || "art") !== "art" && (P.set.mcs || "art") !== "bars";
+  return `<div id="mplayer" class="mplayer ${st ? "full" : "mini"}"><div class="mpfull" ${st ? "" : 'aria-hidden="true"'}><i class="mgrab"></i>${mpFull(f)}</div>
+  <div class="mpmini" data-a="mExpand" role="button" tabindex="${st ? -1 : 0}" aria-label="${t("Open player")}"><span class="mpa ${sp ? "spin" : ""} ${play ? "" : "paused"}" ${f.cover ? `style="background-image:url(${f.cover})"` : ""}>${f.cover ? "" : I("music")}</span><span class="mpt"><b>${esc(f.title)}</b><small>${esc(f.artist || t("Unknown artist"))}</small></span><button class="mb mpp" data-a="mToggle" aria-label="${t(play ? "Pause" : "Play")}">${I(play ? "pause" : "play")}</button></div></div>`;
+}
+/* run after render(): settle the morph and slide the content like a tab change */
+function mPlay() {
+  const el = $("#mplayer"), want = M.exp;
+  if (el) { const hd = el.parentElement.querySelector(".sheet-head"); if (hd) el.style.setProperty("--mhh", hd.offsetHeight + "px");
+    if (M.dy) { el.style.transition = "none"; el.style.transform = `translateY(${M.dy}px)`; el.offsetWidth; el.style.transition = ""; el.style.transform = ""; M.dy = 0; }
+    if (M.from != null && M.from !== want) { el.offsetWidth; el.classList.remove("full", "mini"); el.classList.add(want ? "full" : "mini"); const fl = $(".mpfull", el); if (fl) fl.setAttribute("aria-hidden", String(!want)); } }
+  M.from = null;
+  const c = $(".mcin"); if (c && M.dir) { c.classList.add(M.dir > 0 ? "pg-r" : M.dir < 0 && M.dir !== 2 ? "pg-l" : "pg-f"); if (M.dir === 2) { c.classList.remove("pg-r", "pg-l"); c.classList.add("pg-f"); } }
+  M.dir = 0;
+}
+/* drag the player down (queue) or the pill up (open) */
+{ let g = null;
+  document.addEventListener("pointerdown", (e) => { const pl = e.target.closest && e.target.closest("#mplayer"); if (!pl || e.target.closest("input")) { g = null; return; } g = { x: e.clientX, y: e.clientY, t: Date.now(), full: pl.classList.contains("full"), el: pl, drag: false }; }, true);
+  document.addEventListener("pointermove", (e) => { if (!g) return; const dy = e.clientY - g.y, dx = e.clientX - g.x; if (!g.drag) { if (Math.abs(dy) > 8 && Math.abs(dy) > Math.abs(dx) * 1.2 && (g.full ? dy > 0 : dy < 0)) { g.drag = true; g.el.style.transition = "none"; } else return; } g.dy = dy; if (g.full) g.el.style.transform = `translateY(${Math.max(0, dy)}px)`; }, true);
+  const end = () => { if (!g) return; const o = g; g = null; if (!o.drag) return; M.nc = Date.now(); const v = (o.dy || 0) / Math.max(1, Date.now() - o.t);
+    if (o.full ? (o.dy > 90 || v > 0.6) : (o.dy < -36 || v < -0.5)) { M.dy = o.full ? Math.max(0, o.dy) : 0; o.el.style.transition = ""; o.el.style.transform = ""; if (o.full) mSet("queue", false); else mSet(M.view, true); } else { o.el.style.transition = ""; o.el.style.transform = ""; } };
+  document.addEventListener("pointerup", end, true); document.addEventListener("pointercancel", end, true); }
+
 /* ---------- Media Session: lock-screen / headset / Control Centre controls for the built-in player ---------- */
 (function () {
   if (!("mediaSession" in navigator)) return;
   const ms = navigator.mediaSession, h = (a, f) => { try { ms.setActionHandler(a, f); } catch (e) {} };
   h("play", () => { const a = mAudio(); if (!M.cur) A.mToggle(); else a.play(); }); h("pause", () => mAudio().pause());
   h("previoustrack", () => A.mPrev()); h("nexttrack", () => A.mNext());
-  h("seekto", (d) => { const a = mAudio(); if (d.seekTime != null) a.currentTime = d.seekTime; }); h("seekbackward", () => { const a = mAudio(); a.currentTime = Math.max(0, a.currentTime - 10); }); h("seekforward", () => { const a = mAudio(); a.currentTime += 10; });
+  h("seekto", (d) => { const a = mAudio(); if (d.seekTime != null) a.currentTime = d.seekTime; }); h("seekbackward", null); h("seekforward", null);
   let last = "";
   setInterval(() => {
     const f = typeof mCur === "function" ? mCur() : null; if (!f) return;
