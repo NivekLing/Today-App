@@ -3683,7 +3683,7 @@ async function gf(url, o = {}, interactive) {
   const tk = await gToken(interactive), r = await fetch(url, { ...o, headers: { Authorization: "Bearer " + tk, ...(o.body ? { "Content-Type": "application/json" } : {}) } });
   if (r.status === 401) { G.tok = null; try { localStorage.removeItem("today.gtok"); } catch (e) {} throw new Error("auth"); }
   if (r.status === 204) return null;
-  if (!r.ok) throw new Error("http " + r.status);
+  if (!r.ok) { let m = ""; try { const j = await r.json(); m = (j.error && (j.error.message || j.error.status)) || ""; } catch (e) {} const er = new Error("http " + r.status); er.status = r.status; er.msg = m; throw er; }
   return o.raw ? r : r.json();
 }
 
@@ -3756,11 +3756,15 @@ async function gSyncTasks() {
   P.todos = P.todos.filter((x) => !x.gid || seen.has(x.gid)); P.todos.unshift(...out.filter((o) => o.text));
 }
 A.gSync = async (el) => {
-  if (!P.g || G.busy) return; G.busy = true; render();
-  try {
-    if (gOpt("cal")) await gSyncCal(); if (gOpt("tasks")) await gSyncTasks();
-    P.g.last = Date.now(); saveNow(); G.busy = false; render(); if (el) toast(t("Synced"));
-  } catch (e) { G.busy = false; render(); if (el || (e.message || "") !== "signed out") toast(t("Couldn’t sync with Google"), e.message === "auth" || /popup|denied|access/i.test(e.message || "") ? t("Tap Reconnect and try again.") : t("Check your connection and try again.")); }
+  if (!P.g || G.busy) return; G.busy = true; G.err = ""; render();
+  const bad = [];
+  for (const [k, n, fn] of [["cal", "Calendar", gSyncCal], ["tasks", "Tasks", gSyncTasks]]) {
+    if (!gOpt(k)) continue;
+    try { await fn(); } catch (e) { bad.push(n + (e.status ? " (" + e.status + ")" : "") + ": " + (e.msg || e.message)); if (e.message === "auth") G.needRe = true; }
+  }
+  if (!bad.length) { P.g.last = Date.now(); G.needRe = false; } G.err = bad.join("\n");
+  saveNow(); G.busy = false; render();
+  if (bad.length) { if (el || G.err !== G.lastErr) toast(t("Couldn’t sync with Google"), bad[0].slice(0, 140)); G.lastErr = G.err; } else if (el) toast(t("Synced"));
 };
 A.gRe = async () => { try { await gToken(true); A.gSync(1); } catch (e) { toast(t("Couldn’t sign in to Google")); } };
 /* mark local changes for the next sync */
@@ -3776,10 +3780,10 @@ const gBtn = `<svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F
 const gOnOff = (k) => `<div class="seg" role="radiogroup">${[[true, t("On")], [false, t("Off")]].map(([v, n]) => `<button role="radio" aria-checked="${gOpt(k) === v}" data-a="gSet" data-k="${k}" data-v="${v}">${n}</button>`).join("")}</div>`;
 SHEETS.account = () => {
   if (!P.g) return { title: t("Account"), body: `<div class="note">${t("Sign in with Google to sync Calendar and To-do, and to add music from Google Drive. Or stay a guest: everything stays on this device.")}</div><div class="frow"><button class="btn gbtn" data-a="gSignIn" ${G.busy ? "disabled" : ""}>${gBtn}${G.busy ? t("Signing in…") : t("Sign in with Google")}</button></div><div class="lab">${t("Guest")}</div><div class="grp pad"><span class="mu">${t("You are using Today as a guest.")}</span></div>` };
-  const exp = !(G.tok && G.tok.exp > Date.now()), last = P.g.last ? new Date(P.g.last).toLocaleString(LOC) : t("Never");
+  const exp = !!G.needRe || !(G.tok && G.tok.exp > Date.now()), last = P.g.last ? new Date(P.g.last).toLocaleString(LOC) : t("Never");
   return { title: t("Account"), body: `<div class="profile-top" style="margin-bottom:1em"><div style="min-width:0"><div class="pname">${esc(P.g.name || P.g.email)}</div><div class="accounts"><span class="pill">${I("cloud")}${esc(P.g.email)}</span></div></div></div>
   <div class="lab">${t("Google Calendar")}</div>${gOnOff("cal")}<div class="lab">${t("Google Tasks (To-do)")}</div>${gOnOff("tasks")}
-  <div class="lab">${t("Last synced")}</div><div class="grp pad"><span class="mu">${esc(last)}</span></div>
+  ${G.err ? `<div class="note" style="white-space:pre-wrap;color:var(--danger,#ff453a)">${esc(G.err)}</div>` : ""}<div class="lab">${t("Last synced")}</div><div class="grp pad"><span class="mu">${esc(last)}</span></div>
   <div class="frow"><button class="btn" data-a="${exp ? "gRe" : "gSync"}" data-v="1" ${G.busy ? "disabled" : ""}>${I("refresh-cw")}${G.busy ? t("Syncing…") : exp ? t("Reconnect") : t("Sync now")}</button><button class="btn ghost" data-a="gOut">${t("Sign out")}</button></div>` };
 };
 { const s = SHEETS.settings; SHEETS.settings = () => { const o = s(); o.body = `<div class="lab">${t("Account")}</div><div class="grp"><button class="lr" data-a="open" data-v="account">${I("cloud")}<span class="tx"><b>${P.g ? esc(P.g.email) : t("Sign in with Google")}</b></span>${I("chevron-right")}</button></div>` + o.body; return o; }; }
