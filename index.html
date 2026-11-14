@@ -1417,7 +1417,8 @@ html[data-theme=news] .tabapp .sheet-head{padding-top:.5em;min-height:2.75em}
 @media (max-width:420px){.aimod{grid-template-columns:1fr}}
 .msg .acts{display:flex;flex-direction:column;gap:.35em;margin-top:.6em}.msg .act{display:inline-flex;align-items:center;gap:.4em;font-size:.85em;padding:.3em .65em;border-radius:.8em;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--text);align-self:flex-start}.msg .act svg{width:1em;height:1em;color:var(--accent);flex:none}.msg .act.bad{background:color-mix(in srgb,#ff453a 16%,transparent)}.msg .act.bad svg{color:#ff453a}
 /* ---- v23 ---- */
-.view>*:first-child{margin-top:10px}.tabapp .sheet-head{margin-top:10px}
+.view:not(.cvmode){padding-top:calc(1.2em + 10px)}.tabapp .sheet-head{padding-top:calc(.5em + 10px);box-sizing:border-box}
+html,body{overscroll-behavior:none}
 form[data-form=locq]{margin:10px 0}
 .nlrow{display:flex;align-items:center;justify-content:space-between}.npv2.dim{opacity:.4;pointer-events:none}
 .m-phone .cvc{padding-bottom:30px}
@@ -1439,6 +1440,8 @@ form[data-form=locq]{margin:10px 0}
 .m-compact .mpf{align-items:stretch}.m-compact .mpart{height:auto;align-self:stretch}.m-compact .mpbot{align-self:center}
 .mpbot,.mpart{min-width:0}.m-compact .mpbot{flex:1 1 0}.m-compact .mpart{flex:1 1 0;min-width:8em}
 @media (orientation:landscape){.mpbot{flex:1 1 0}.mpart{flex:1 1 0;min-width:8em}}
+.m-phone .tabapp .sheet-head,.m-tablet .tabapp .sheet-head,.m-desktop .tabapp .sheet-head{padding-top:calc(var(--sat,0px) + 10px)}
+html[data-theme=news] .tabapp .sheet-head{padding-top:calc(.5em + 10px)}
 </style></head><body>
 <main class="page"><section class="stage"><div class="device m-compact" id="device" role="application" aria-label="Today"><div class="view" id="view"></div><div class="dock" id="dock"></div><div id="overlay"></div><div id="modal"></div><div class="toast" id="toast" role="status" aria-live="polite"></div></div></section></main>
 <script>const TEA="<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 11h11v2.5a5.5 5.5 0 0 1-5.5 5.5A5.5 5.5 0 0 1 6 13.5z\" fill=\"#E7B77A\" stroke=\"#8B5A2B\" stroke-width=\"1.6\"/><path d=\"M17 12h1.2a2.3 2.3 0 0 1 0 4.6h-2\" stroke=\"#8B5A2B\" stroke-width=\"1.6\"/><path d=\"M3.5 20.8h16\" stroke=\"#8B5A2B\" stroke-width=\"1.6\"/><path d=\"M9.2 3.5c-1 1.4 1 2.2 0 3.6M13.2 3.5c-1 1.4 1 2.2 0 3.6\" stroke=\"#9AA3AE\" stroke-width=\"1.4\"/></svg>",LANT="<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 1.5v3\" stroke=\"#B8860B\" stroke-width=\"1.6\" stroke-linecap=\"round\" fill=\"none\"/><rect x=\"8\" y=\"3.5\" width=\"8\" height=\"2.2\" rx=\".8\" fill=\"#E9B23A\"/><ellipse cx=\"12\" cy=\"12\" rx=\"7.5\" ry=\"6.6\" fill=\"#D7263D\"/><path d=\"M12 5.4c-3 1.6-3 11.4 0 13.2M12 5.4c3 1.6 3 11.4 0 13.2M5 12h14\" stroke=\"#9B1425\" stroke-width=\"1\" fill=\"none\"/><rect x=\"8\" y=\"18.3\" width=\"8\" height=\"2.2\" rx=\".8\" fill=\"#E9B23A\"/><path d=\"M10 20.5v2.5M12 20.5v3M14 20.5v2.5\" stroke=\"#E9B23A\" stroke-width=\"1.2\" stroke-linecap=\"round\"/></svg>",FUJI="<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"18.5\" cy=\"6.5\" r=\"2.6\" fill=\"#E5484D\"/><path d=\"M1.5 20.5L9.4 7.5h5.2l7.9 13z\" fill=\"#5B7DB1\"/><path d=\"M9.4 7.5h5.2l1.9 3.1-2.2-.9-1.9 1.5-1.9-1.5-2.2.9z\" fill=\"#fff\"/></svg>";
@@ -3123,8 +3126,10 @@ document.addEventListener("touchmove", (e) => {
   if (!tg || tg.done) return; const t0 = e.touches[0], dx = t0.clientX - tg.x, dy = t0.clientY - tg.y;
   if (S.away && dy < -22 && Math.abs(dy) > Math.abs(dx) * 0.8) { showDock(); tg.done = true; return; }
   if (!tg.ok) return;
+  /* horizontal intent: freeze vertical scroll and stop Safari's edge back/forward swipe */
+  if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.2 && e.cancelable) e.preventDefault();
   if (Math.abs(dx) > 64 && Math.abs(dx) > Math.abs(dy) * 1.6) { tg.done = true; goPage(curPos() + (dx < 0 ? 1 : -1)); }
-}, { passive: true });
+}, { passive: false });
 document.addEventListener("touchend", () => { tg = null; }, { passive: true });
 document.addEventListener("touchcancel", () => { tg = null; }, { passive: true });
 /* swipe up (pointer / mouse / pen) also brings the nav bar back */
