@@ -1558,7 +1558,7 @@ html[data-theme=android4] .sw::before{content:"OFF";position:absolute;right:.35e
 .sp-monkey img{animation:spmon 1.5s ease-in-out infinite}@keyframes spmon{0%,100%{transform:translate(-5px,0) rotate(-4deg)}25%,75%{transform:translate(0,-10px) rotate(0)}50%{transform:translate(5px,0) rotate(4deg)}}
 @media (prefers-reduced-motion:reduce){.sp-pic img,.sp-pic::after{animation:none!important}}
 /* v28: Liquid Glass currency keypad = iOS 26 keyboard: full-bleed, rounded top corners, whatever is behind shows outside the curve */
-html[data-theme=glass] .sheet.cur .xkeys{margin-inline:-1em;margin-bottom:-.6em;padding:.7em 1em calc(.6em + env(safe-area-inset-bottom,0px));border-radius:26px 26px 0 0;background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(30px) saturate(1.7);backdrop-filter:blur(30px) saturate(1.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+html[data-theme=glass] .sheet.cur .xkeys{padding:.7em 1em calc(.6em + env(safe-area-inset-bottom,0px));border-radius:26px 26px 0 0;background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(30px) saturate(1.7);backdrop-filter:blur(30px) saturate(1.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
 /* v30: the full player stops under the title bar and never scrolls the view */
 .msheet{overflow:hidden}
 .msheet:has(.mplayer.full){background:var(--bg)}
@@ -1570,6 +1570,19 @@ html[data-theme=glass] .sheet.cur .xkeys{margin-inline:-1em;margin-bottom:-.6em;
 @keyframes pgRg{from{transform:translateX(16%)}to{transform:none}}@keyframes pgLg{from{transform:translateX(-16%)}to{transform:none}}@keyframes pgFg{from{transform:scale(.985)}to{transform:none}}
 html[data-theme=glass] .pg-r{animation-name:pgRg}html[data-theme=glass] .pg-l{animation-name:pgLg}html[data-theme=glass] .pg-f{animation-name:pgFg}
 html[data-theme=glass] .mcin.pg-r,html[data-theme=glass] .mcin.pg-l,html[data-theme=glass] .mcin.pg-f{will-change:transform}
+/* v32: expanded player sits 4px below the top buttons; EQ Reset / Save buttons centre icon and text on one line */
+.mplayer{top:calc(var(--mhh,0px) + 4px)}
+.mpfull{height:calc(100cqh - var(--mhh,0px) - 4px)}
+.msheet .frow .pillbtn{display:inline-flex;align-items:center;justify-content:center;gap:.45em;line-height:1}
+.msheet .frow .pillbtn svg{flex:none;display:block;margin:0}
+/* v32: avatar ring picker not clipped, last (custom) swatch fills its circle; EQ buttons share one baseline */
+.rings{padding:.45em .5em .45em .6em;margin-left:.1em}
+.rings button,.rings label{box-sizing:border-box;flex:none;display:block}
+.rings label.multi{border:0;background-origin:border-box;background-clip:border-box}
+.rings input{inset:0;width:100%;height:100%}
+.frow .pillbtn{display:inline-flex;align-items:center;justify-content:center;gap:.45em;line-height:1}
+.frow .pillbtn svg{flex:none;display:block;width:1.15em;height:1.15em}
+.sheet.cur .xkeys{position:fixed;left:0;right:0;bottom:0;margin:0;padding-inline:1em;box-sizing:border-box;z-index:6}
 </style></head><body>
 <main class="page"><section class="stage"><div class="device m-compact" id="device" role="application" aria-label="Today"><div class="view" id="view"></div><div class="dock" id="dock"></div><div id="overlay"></div><div id="modal"></div><div class="toast" id="toast" role="status" aria-live="polite"></div></div></section></main>
 <script>const TEA="<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 11h11v2.5a5.5 5.5 0 0 1-5.5 5.5A5.5 5.5 0 0 1 6 13.5z\" fill=\"#E7B77A\" stroke=\"#8B5A2B\" stroke-width=\"1.6\"/><path d=\"M17 12h1.2a2.3 2.3 0 0 1 0 4.6h-2\" stroke=\"#8B5A2B\" stroke-width=\"1.6\"/><path d=\"M3.5 20.8h16\" stroke=\"#8B5A2B\" stroke-width=\"1.6\"/><path d=\"M9.2 3.5c-1 1.4 1 2.2 0 3.6M13.2 3.5c-1 1.4 1 2.2 0 3.6\" stroke=\"#9AA3AE\" stroke-width=\"1.4\"/></svg>",LANT="<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 1.5v3\" stroke=\"#B8860B\" stroke-width=\"1.6\" stroke-linecap=\"round\" fill=\"none\"/><rect x=\"8\" y=\"3.5\" width=\"8\" height=\"2.2\" rx=\".8\" fill=\"#E9B23A\"/><ellipse cx=\"12\" cy=\"12\" rx=\"7.5\" ry=\"6.6\" fill=\"#D7263D\"/><path d=\"M12 5.4c-3 1.6-3 11.4 0 13.2M12 5.4c3 1.6 3 11.4 0 13.2M5 12h14\" stroke=\"#9B1425\" stroke-width=\"1\" fill=\"none\"/><rect x=\"8\" y=\"18.3\" width=\"8\" height=\"2.2\" rx=\".8\" fill=\"#E9B23A\"/><path d=\"M10 20.5v2.5M12 20.5v3M14 20.5v2.5\" stroke=\"#E9B23A\" stroke-width=\"1.2\" stroke-linecap=\"round\"/></svg>",FUJI="<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"18.5\" cy=\"6.5\" r=\"2.6\" fill=\"#E5484D\"/><path d=\"M1.5 20.5L9.4 7.5h5.2l7.9 13z\" fill=\"#5B7DB1\"/><path d=\"M9.4 7.5h5.2l1.9 3.1-2.2-.9-1.9 1.5-1.9-1.5-2.2.9z\" fill=\"#fff\"/></svg>";
@@ -1832,7 +1845,7 @@ function askText(title, val, ok) { return new Promise((res) => { _dlg = res; mod
 function actionSheet(title, items) { _dlg = items; modal(`<div class="asheet" role="menu"><div class="asg">${title ? `<div class="ast" style="padding:.7em">${esc(title)}</div>` : ""}${items.map((it, i) => `<button role="menuitem" class="${it.danger ? "dng" : ""}" data-a="asel" data-i="${i}">${it.ic ? I(it.ic) : ""}${esc(it.label)}</button>`).join("")}</div><div class="asg"><button data-a="dlg" data-v="">${t("Cancel")}</button></div></div>`, "as"); }
 
 /* ---------- Themes, colors, fonts, icon packs, Auto light/dark ---------- */
-const THEMES = [["basic", "Basic"], ["dark", "Dark"], ["glass", "Glass Prism"], ["ios18", "Aurora"], ["ios6", "Classic"], ["materialu", "Palette"], ["oneui", "One UI Horizon"], ["sense", "Breeze"], ["material", "Essential"], ["android4", "Jellybean"], ["wp", "Metro"], ["minimal", "Minimalist"], ["nothing", "Dot Matrix"], ["news", "News"]];
+const THEMES = [["basic", "Basic"], ["dark", "Dark"], ["glass", "Glass Prism"], ["ios18", "Aurora"], ["ios6", "Classic"], ["materialu", "Palette"], ["oneui", "One UI Horizon"], ["sense", "Breeze"], ["material", "Material"], ["android4", "Jellybean"], ["wp", "Metro"], ["minimal", "Minimalist"], ["nothing", "Dot Matrix"], ["news", "News"]];
 const THGROUPS = [[null, THEMES.map((x) => x[0])]]; /* one flat list, no categories */
 const FW = ["ios18", "ios6", "android4", "material", "sense", "wp"];                // classic full-width tab bar
 const DARK_ONLY = ["dark", "glass"];                                          // no light variant
@@ -1972,7 +1985,7 @@ SHEETS.theme = () => {
         <div class="lab">Accent</div>${swatches("ac", c.ac || "")}<div class="note">Highlights such as NOW tags, today in the calendar and the active-day marker.</div>
         ${c.pr || c.ac ? `<div style="margin-top:.8em"><button class="btn ghost" data-a="thColReset">${I("rotate-ccw")}${t("Reset")}</button></div>` : ""}
         ${["basic", "materialu"].includes(th.name) ? `<div class="note">${name} tints its surfaces from your Primary color and adjusts it for Light and Dark.</div>` : ""}`;
-    } else body += `<div class="empty">${esc(name)} uses a fixed palette.<br>Colors can be changed in Dark, Aurora, Palette, Basic, Essential and Jellybean.</div>`;
+    } else body += `<div class="empty">${esc(name)} uses a fixed palette.<br>Colors can be changed in Dark, Aurora, Palette, Basic, Material and Jellybean.</div>`;
   } else if (tab === "font") {
     const all = fontsFor(), sc = scriptOf(), cur = th.font || "auto", def = FONTS.find((f) => f.id === THEME_FONT[th.name]);
     const rec = new Set(THEME_FONTS[th.name] || []), rest = all.filter((f) => f !== def);
@@ -3635,7 +3648,7 @@ function mpLayer() {
 /* run after render(): settle the morph and slide the content like a tab change */
 function mPlay() {
   const el = $("#mplayer"), want = mFull();
-  if (el) { const hd = el.parentElement.querySelector(".sheet-head"); if (hd) el.style.setProperty("--mhh", (hd.offsetTop + hd.offsetHeight) + "px");
+  if (el) { const hd = el.parentElement.querySelector(".sheet-head"); if (hd) el.style.setProperty("--mhh", (hd.offsetTop + hd.offsetHeight + 4) + "px");
     if (M.dy) { el.style.transition = "none"; el.style.transform = `translateY(${M.dy}px)`; el.offsetWidth; el.style.transition = ""; el.style.transform = ""; M.dy = 0; }
     if (M.from != null && M.from !== want) { el.offsetWidth; el.classList.remove("full", "mini"); el.classList.add(want ? "full" : "mini"); const fl = $(".mpfull", el); if (fl) fl.setAttribute("aria-hidden", String(!want)); } }
   M.from = null; { const sh = el && el.parentElement; [sh, el, $(".sheet-body", sh)].forEach((n) => { if (n && n.scrollTop) n.scrollTop = 0; }); }
@@ -3960,14 +3973,11 @@ document.addEventListener("keydown", (e) => {
   const m = { Enter: "=", "=": "=", Backspace: "⌫", Delete: "AC", c: "AC", C: "AC", "*": "×", x: "×", "/": "÷", "+": "+", "-": "−", ".": ".", ",": ".", "%": "%" };
   const k = m[e.key] || (/^\d$/.test(e.key) ? e.key : ""); if (!k) return; e.preventDefault(); A.curKey({ dataset: { v: k } });
 });
-/* keypad spans the full screen width whatever the sheet padding is (so the Liquid Glass corners show fully) */
-function curFit() {
-  const k = $(".xkeys"); if (!k) return; k.style.marginInline = "0px"; k.style.paddingInline = ""; const d = $("#device").getBoundingClientRect(), r = k.getBoundingClientRect(), sc = S.scale || 1;
-  const l = (r.left - d.left) / sc, rr = (d.right - r.right) / sc; if (l < 0.5 && rr < 0.5) { k.style.marginInline = ""; return; }
-  k.style.marginInline = `${-l}px ${-rr}px`; k.style.paddingInline = `${Math.max(l, 0)}px ${Math.max(rr, 0)}px`;
-}
-new MutationObserver(() => { const k = $(".xkeys"); if (k && !k.dataset.fit) { k.dataset.fit = 1; curFit(); setTimeout(curFit, 320); } }).observe(document.body, { childList: true, subtree: true });
-addEventListener("resize", () => setTimeout(curFit, 80));
+/* the keypad is fixed to the sheet's edges (it escapes the scrolling body that used to clip it), so it spans the whole screen width;
+   the list above it just stops where the keypad starts */
+function curSpace() { const k = $(".xkeys"), c = $(".curscroll"); if (!c) return; c.style.marginBottom = k && !k.classList.contains("closing") ? k.offsetHeight + "px" : ""; }
+new MutationObserver(() => { const k = $(".xkeys"); if (k && !k.dataset.fit) { k.dataset.fit = 1; curSpace(); setTimeout(curSpace, 320); } else if (!k) curSpace(); }).observe(document.body, { childList: true, subtree: true });
+addEventListener("resize", () => setTimeout(curSpace, 80));
 A.curKeysOff = () => { const k = $(".xkeys"); if (!k || k.classList.contains("closing")) return; k.classList.add("closing"); setTimeout(() => { S.curKeys = false; render(); }, 260); };
 A.curRef = () => { curLoad(true); toast(t("Refreshing…")); };
 A.curEditTog = () => { S.curEdit = !S.curEdit; render(); };
@@ -4378,13 +4388,15 @@ async function gToken(interactive) {
   /* the popup must open inside the tap, so nothing is awaited between the tap and requestAccessToken */
   return new Promise((res, rej) => {
     if (G.pend) { try { G.pend.fin(false, new Error("cancelled")); } catch (e) {} }
+    if (interactive) G.cl = null; /* always a fresh client for a new sign-in attempt, so a closed window never leaves it half-open */
     let done = false, ft = 0, tm = 0; const me = {};
-    const fin = (ok, v) => { if (done) return; done = true; clearTimeout(ft); clearTimeout(tm); removeEventListener("focus", onF); if (G.pend === me) G.pend = null; ok ? res(v) : rej(v); };
+    const fin = (ok, v) => { if (done) return; done = true; clearTimeout(ft); clearTimeout(tm); removeEventListener("focus", onF); removeEventListener("visibilitychange", onF); removeEventListener("pageshow", onF); removeEventListener("pointerdown", onF, true); removeEventListener("touchstart", onF, true); if (!ok) G.cl = null; if (G.pend === me) G.pend = null; ok ? res(v) : rej(v); };
     me.fin = fin; G.pend = me;
     /* if the popup is closed without GIS calling back, give up shortly after the window regains focus (or after 2 min) */
-    const onF = () => { clearTimeout(ft); ft = setTimeout(() => fin(false, new Error("popup_closed")), 2500); };
+    const onF = () => { if (document.visibilityState === "hidden") return; clearTimeout(ft); ft = setTimeout(() => fin(false, new Error("popup_closed")), 1200); };
     tm = setTimeout(() => fin(false, new Error("timeout")), 120000);
-    if (interactive) setTimeout(() => { if (!done) addEventListener("focus", onF); }, 1500);
+    /* a focus, a return to the page, or any tap inside the app means the sign-in window is gone (it would cover the app otherwise) */
+    if (interactive) setTimeout(() => { if (!done) { addEventListener("focus", onF); addEventListener("visibilitychange", onF); addEventListener("pageshow", onF); addEventListener("pointerdown", onF, true); addEventListener("touchstart", onF, true); } }, 1200);
     try { gClient().requestAccessToken({ prompt: interactive && !P.g ? "select_account" : "", hint: P.g && P.g.email ? P.g.email : undefined }); }
     catch (e) { fin(false, e); }
   });
@@ -4398,7 +4410,7 @@ async function gf(url, o = {}, interactive) {
 }
 
 A.gSignIn = async () => {
-  if (G.busy && Date.now() - (G.busyAt || 0) < 130000) return; G.busy = true; G.busyAt = Date.now(); const my = (G.seq = (G.seq || 0) + 1); const tkp = gToken(true); render();
+  G.busy = true; G.busyAt = Date.now(); const my = (G.seq = (G.seq || 0) + 1); const tkp = gToken(true); render();
   try {
     const tk = await tkp, u = await (await fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers: { Authorization: "Bearer " + tk } })).json();
     P.g = { email: u.email || "", name: u.name || "", cal: true, tasks: true, last: 0, dc: [], dt: [] }; P.acct = "google";
@@ -4489,7 +4501,7 @@ A.gRe = async () => { try { await gToken(true); A.gSync(1); } catch (e) { toast(
 const gBtn = `<svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M23 12.3c0-.8-.1-1.5-.2-2.2H12v4.2h6.2a5.3 5.3 0 0 1-2.3 3.5v2.9h3.7c2.2-2 3.4-5 3.4-8.4z"/><path fill="#34A853" d="M12 24c3.1 0 5.7-1 7.6-2.8l-3.7-2.9c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.7H1.8v3C3.7 21.5 7.5 24 12 24z"/><path fill="#FBBC05" d="M5.6 14.7a7.2 7.2 0 0 1 0-4.6v-3H1.8a12 12 0 0 0 0 10.6z"/><path fill="#EA4335" d="M12 4.8c1.7 0 3.2.6 4.4 1.7l3.3-3.3A11.9 11.9 0 0 0 12 0C7.500 0 3.700 2.500 1.800 6.100l3.800 3c.9-2.700 3.400-4.300 6.400-4.300z"/></svg>`;
 const gOnOff = (k) => `<div class="seg" role="radiogroup">${[[true, t("On")], [false, t("Off")]].map(([v, n]) => `<button role="radio" aria-checked="${gOpt(k) === v}" data-a="gSet" data-k="${k}" data-v="${v}">${n}</button>`).join("")}</div>`;
 SHEETS.account = () => {
-  if (!P.g) return { title: t("Account"), body: `<div class="note">${t("Sign in with Google to sync Calendar and To-do, and to add music from Google Drive. Or stay a guest: everything stays on this device.")}</div><div class="frow"><button class="btn gbtn" data-a="gSignIn" ${G.busy ? "disabled" : ""}>${gBtn}${G.busy ? t("Signing in…") : t("Sign in with Google")}</button></div><div class="lab">${t("Guest")}</div><div class="grp pad"><span class="mu">${t("You are using Today as a guest.")}</span></div>` };
+  if (!P.g) return { title: t("Account"), body: `<div class="note">${t("Sign in with Google to sync Calendar and To-do, and to add music from Google Drive. Or stay a guest: everything stays on this device.")}</div><div class="frow"><button class="btn gbtn" data-a="gSignIn">${gBtn}${G.busy ? t("Signing in…") : t("Sign in with Google")}</button></div><div class="lab">${t("Guest")}</div><div class="grp pad"><span class="mu">${t("You are using Today as a guest.")}</span></div>` };
   const exp = !!G.needRe || !(G.tok && G.tok.exp > Date.now()), last = P.g.last ? new Date(P.g.last).toLocaleString(LOC) : t("Never");
   return { title: t("Account"), body: `<div class="profile-top" style="margin-bottom:1em"><div style="min-width:0"><div class="pname">${esc(P.g.name || P.g.email)}</div><div class="accounts"><span class="pill">${I("cloud")}${esc(P.g.email)}</span></div></div></div>
   <div class="lab">${t("Google Calendar")}</div>${gOnOff("cal")}<div class="lab">${t("Google Tasks (To-do)")}</div>${gOnOff("tasks")}
