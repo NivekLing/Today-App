@@ -3098,7 +3098,7 @@ A.exCopy = async () => { try { await navigator.clipboard.writeText(exportData())
 function afterRestore() { P.ns = null; P.bs = null; P.ais = null; S.rst = 1; S.bsT = 0; try { delete S.ch; } catch (e) {} CS(); saveNow(); if (P.g) setTimeout(() => nsSync(false), 1500); }
 function importText(txt) { try { const j = JSON.parse(txt); if (!j || typeof j !== "object" || !Array.isArray(j.widgets)) throw 0; localStorage.setItem(STORE, txt); P = loadP(); afterRestore(); applyLang(); applyTheme(); S.stack = []; render(); toast(t("Backup restored")); } catch { toast(t("That isn’t a valid backup")); } }
 A.imRun = () => importText($("#imTxt").value);
-A.reset = async () => { if (await confirmDlg(t("Reset everything?"), t("All notes, events, to-dos and settings on this device will be erased."), t("Erase"), true)) { try { localStorage.removeItem(STORE); } catch {} P = loadP(); applyLang(); applyTheme(); S.stack = []; S.tab = 0; render(); toast(t("Reset")); } };
+A.reset = async () => { if (await confirmDlg(t("Reset everything?"), t("All notes, events, to-dos and settings on this device will be erased."), t("Erase"), true)) { try { localStorage.removeItem(STORE); } catch {} gInvalidate(); try { if (G.tok && window.google) google.accounts.oauth2.revoke(G.tok.t, () => {}); } catch (e) {} G.tok = null; try { localStorage.removeItem("today.gtok"); } catch (e) {} beClear(); P = loadP(); applyLang(); applyTheme(); S.stack = []; S.tab = 0; render(); toast(t("Reset")); } };
 SHEETS.storage = () => { const sz = new Blob([exportData()]).size; return { title: t("Backup"), body: `<div class="grp"><div class="lr"><span class="tx"><b>${t("Stored on this device")}</b><small>${(sz / 1024).toFixed(1)} KB · ${tn(P.notes.length, "{0} note", "{0} notes")} · ${tn(P.events.length, "{0} event", "{0} events")} · ${tn(P.todos.length, "{0} to-do", "{0} to-dos")} · ${tn(CS().list.filter((c) => c.m.length).length, "{0} chat", "{0} chats")}</small></span></div></div><div class="frow"><button class="btn" data-a="exFile">${I("download")}${t("Export backup")}</button><button class="btn ghost" data-a="exCopy">${I("copy")}${t("Copy")}</button></div><div class="frow" style="margin-top:.6em"><button class="btn" data-a="gBackup">${I("cloud")}${t("Back up to Google Drive")}</button></div><div class="frow" style="margin-top:.6em"><button class="btn ghost" data-a="gRestore">${I("download")}${t("Restore from Google Drive")}</button></div>${P.g && P.g.bk ? `<div class="note">${t("Last Drive backup")}: ${new Date(P.g.bk).toLocaleString(LOC)}</div>` : ""}<div class="lab">${t("Restore")}</div><input type="file" id="imf" accept=".json,application/json" hidden data-ch="import"><button class="btn ghost" data-a="imPick">${I("upload")}${t("Choose backup file")}</button><textarea class="fi" id="imTxt" rows="3" placeholder="${t("…or paste a backup here")}" style="margin-top:.6em"></textarea><div style="margin-top:.5em"><button class="btn ghost sm" data-a="imRun">${t("Restore")}</button></div><div class="lab">${t("Danger zone")}</div><button class="btn danger" data-a="reset">${I("trash")}${t("Reset everything")}</button><div class="note">${t("API keys are included in backups. Keep them private.")}</div>` }; };
 A.imPick = () => $("#imf").click();
 SHEETS.about = () => ({ title: t("About"), body: `<div class="profile-top"><span class="ic" data-ic="${effIc()}" style="--c1:#f5b83d;--c2:#ff9f0a;color:#1c1405">${I("sun")}</span><div><div class="pname">Today</div><div class="sub">${t("Version")} 3.0 · ${t("Today at a glance")}</div></div></div><div class="grp pad"><p style="margin:0">${t("Today keeps your day in one place: clock, weather, schedule, to-dos, notes and an AI hub. Everything is stored on this device. Nothing is synced to Google or Apple.")}</p></div><div class="note">${t("Weather by Open-Meteo. Fonts by Google Fonts. Stock quotes by Yahoo Finance.")}</div><button class="lr" data-a="open" data-v="manual" style="margin-top:.8em">${I("book-open")}<span class="tx"><b>${t("Manual / Guide")}</b></span>${I("chevron-right")}</button>` });
@@ -4283,14 +4283,14 @@ function wHTML() {
 }
 function welcomeShow() {
   let seen = false; try { seen = localStorage.getItem("today.welcomed") === "1"; } catch (e) {} if (P.welcomed || seen || $("#welcome")) return;
-  S.w = { i: 0, name: "" }; P.welcomed = true; save(); try { localStorage.setItem("today.welcomed", "1"); } catch (e) {} const el = document.createElement("div"); el.id = "welcome"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.innerHTML = wHTML(); $("#device").appendChild(el);
+  S.w = { i: 0, name: "" }; const el = document.createElement("div"); el.id = "welcome"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.innerHTML = wHTML(); $("#device").appendChild(el);
 }
 function wGo(d) { const el = $("#welcome"); if (!el) return; S.w.i = clamp(S.w.i + d, 0, WSTEPS.length - 1); el.classList.toggle("back", d < 0); el.innerHTML = wHTML(); }
 A.wNext = () => wGo(1); A.wPrev = () => wGo(-1);
 IN.wname = (el) => { S.w.name = el.value; };
-A.wDone = () => { const el = $("#welcome"), nm = (S.w.name || "").trim(); if (nm) P.name = nm; P.welcomed = true; P.acct = P.g ? "google" : "guest"; S.lastAct = Date.now(); S.away = false; save(); if (el) { el.classList.add("out"); setTimeout(() => el.remove(), 400); } render(); };
-A.wReplay = () => { try { localStorage.removeItem("today.welcomed"); } catch (e) {} P.welcomed = false; S.stack = []; render(); welcomeShow(); };
-document.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target && e.target.id === "wname") { e.preventDefault(); A.wDone(); } });
+A.wDone = () => { const el = $("#welcome"), nm = (S.w.name || "").trim(); if (nm) P.name = nm; P.welcomed = true; P.acct = P.g ? "google" : "guest"; S.lastAct = Date.now(); S.away = false; saveNow(); save(); try { localStorage.setItem("today.welcomed", "1"); } catch (e) {} if (el) { el.classList.add("out"); setTimeout(() => el.remove(), 400); } render(); };
+A.wReplay = () => { try { localStorage.removeItem("today.welcomed"); } catch (e) {} P.welcomed = false; saveNow(); S.stack = []; render(); welcomeShow(); };
+document.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing && e.target && e.target.id === "wname") { e.preventDefault(); A.wDone(); } });
 setTimeout(() => { try { welcomeShow(); } catch (e) {} }, 0);
 
 /* ---------- Nav Bar customiser, default tab, splash setting ---------- */
@@ -4394,7 +4394,9 @@ const AV_IMG={dog:"data:image/webp;base64,UklGRthYAABXRUJQVlA4WAoAAAAQAAAAPwEAPw
 /* ---------- Google: sign-in, Calendar + Tasks sync, Drive music ---------- */
 const G_CLIENT = "231710286414-vbbb6dr1tcd07rcvjhe53spk810l07a7.apps.googleusercontent.com";
 const G_SCOPE = "openid email profile https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/tasks https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file";
-const G = { tok: null, busy: false, drv: { items: [], sel: [], q: "", load: false, err: "" } };
+/* Cloudflare Worker backend identity. Kept OUTSIDE P (own localStorage key) so it never lands in backups or Drive sync files, and it never holds the access token. */
+const BE_URL = "https://today-app-backend.kevinhou-today.workers.dev", BE_KEY = "today.be";
+const G = { tok: null, busy: false, be: (() => { try { return JSON.parse(localStorage.getItem(BE_KEY) || "null"); } catch (e) { return null; } })(), beJob: null, beSeq: 0, drv: { items: [], sel: [], q: "", load: false, err: "" } };
 try { G.tok = JSON.parse(localStorage.getItem("today.gtok") || "null"); } catch (e) {}
 const gTZ = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) { return "UTC"; } })();
 const gOpt = (k) => !P.g || P.g[k] !== false;
@@ -4411,17 +4413,19 @@ function gLoadLib() {
 const gLibOk = () => !!(window.google && google.accounts && google.accounts.oauth2);
 function gClient() {
   if (G.cl) return G.cl;
-  G.cl = google.accounts.oauth2.initTokenClient({
+  const cl = (G.cl = google.accounts.oauth2.initTokenClient({
     client_id: G_CLIENT, scope: G_SCOPE,
-    callback: (r) => { const p = G.pend; if (!p) return; if (r.error || !r.access_token) return p.fin(false, new Error(r.error || "denied")); G.tok = { t: r.access_token, exp: Date.now() + (+r.expires_in || 3600) * 1000 }; try { localStorage.setItem("today.gtok", JSON.stringify(G.tok)); } catch (e) {} p.fin(true, G.tok.t); },
-    error_callback: (e) => { const p = G.pend; if (p) p.fin(false, new Error((e && e.type) || "popup")); },
-  });
-  return G.cl;
+    /* a request is bound to the client that opened it (p.cl): a late callback or popup-close from an older client must not touch a newer request */
+    callback: (r) => { const p = G.pend; if (!p || p.cl !== cl) return; if (r.error || !r.access_token) return p.fin(false, new Error(r.error || "denied")); G.tok = { t: r.access_token, exp: Date.now() + (+r.expires_in || 3600) * 1000 }; try { localStorage.setItem("today.gtok", JSON.stringify(G.tok)); } catch (e) {} p.fin(true, G.tok.t); },
+    error_callback: (e) => { const p = G.pend; if (p && p.cl === cl) p.fin(false, new Error((e && e.type) || "popup")); },
+  }));
+  return cl;
 }
-async function gToken(interactive) {
+async function gToken(interactive, alive) {
   if (G.tok && G.tok.exp - 60000 > Date.now()) return G.tok.t;
   if (!interactive && !P.g) throw new Error("signed out");
   if (!gLibOk()) await gLoadLib();
+  if ((!interactive && !P.g) || (alive && !alive())) throw new Error("cancelled"); /* signed out, reset or superseded while the library loaded: never open a request that could write the token afterwards */
   /* the popup must open inside the tap, so nothing is awaited between the tap and requestAccessToken */
   return new Promise((res, rej) => {
     if (G.pend) { try { G.pend.fin(false, new Error("cancelled")); } catch (e) {} }
@@ -4434,7 +4438,7 @@ async function gToken(interactive) {
     tm = setTimeout(() => fin(false, new Error("timeout")), 120000);
     /* a focus, a return to the page, or any tap inside the app means the sign-in window is gone (it would cover the app otherwise) */
     if (interactive) setTimeout(() => { if (!done) { addEventListener("focus", onF); addEventListener("visibilitychange", onF); addEventListener("pageshow", onF); addEventListener("pointerdown", onF, true); addEventListener("touchstart", onF, true); } }, 1200);
-    try { gClient().requestAccessToken({ prompt: interactive && !P.g ? "select_account" : "", hint: P.g && P.g.email ? P.g.email : undefined }); }
+    try { const cl = gClient(); me.cl = cl; cl.requestAccessToken({ prompt: interactive && !P.g ? "select_account" : "", hint: P.g && P.g.email ? P.g.email : undefined }); }
     catch (e) { fin(false, e); }
   });
 }
@@ -4446,19 +4450,37 @@ async function gf(url, o = {}, interactive) {
   return o.raw ? r : r.json();
 }
 
+const beClear = () => { G.be = null; G.beSeq++; G.beJob = null; try { G.beCtl && G.beCtl.abort(); } catch (e) {} G.beCtl = null; try { localStorage.removeItem(BE_KEY); } catch (e) {} }; /* also cancels any in-flight beAuth */
+/* Invalidate every pending Google sign-in / token request (called by Sign out and Reset everything). Bumping G.seq makes any in-flight A.gSignIn stop; cancelling G.pend makes the GIS callback ignore a late token, so nothing can write G.tok or today.gtok afterwards. */
+function gInvalidate() { G.seq = (G.seq || 0) + 1; const p = G.pend; try { p && p.fin(false, new Error("cancelled")); } catch (e) {} G.pend = null; G.busy = false; }
+const beEq = (x, y) => { x = String(x || "").trim().toLowerCase(); return !!x && x === String(y || "").trim().toLowerCase(); }; /* non-empty, case-insensitive email match */
+const beOK = () => !!(G.be && G.be.googleSub && P.g && beEq(G.be.email, P.g.email)); /* true only if the Worker confirmed this same Google account */
+function beAuth(tk) {
+  if (G.beJob) return G.beJob; /* one request per login attempt */
+  const seq = ++G.beSeq, ctl = (G.beCtl = new AbortController()), to = setTimeout(() => ctl.abort(), 10000);
+  return (G.beJob = fetch(BE_URL + "/auth/google", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ accessToken: tk }), signal: ctl.signal })
+    .then(async (r) => { const j = await r.json().catch(() => null); if (!r.ok || !j || j.authenticated !== true || !j.googleSub) throw new Error("backend " + r.status); return j; })
+    .then((j) => { if (seq !== G.beSeq || !P.g) return false; /* signed out or a newer attempt started meanwhile */ if (!beEq(j.email, P.g.email)) throw new Error("backend email mismatch"); G.be = { googleSub: j.googleSub, email: j.email || "", name: j.name || "", at: Date.now() }; try { localStorage.setItem(BE_KEY, JSON.stringify(G.be)); } catch (e) {} return true; })
+    .catch((e) => { if (seq === G.beSeq) { beClear(); console.warn("Backend sign-in unavailable:", e && e.name === "AbortError" ? "timeout" : e && e.message); } return false; })
+    .finally(() => { clearTimeout(to); if (seq === G.beSeq) { G.beJob = null; G.beCtl = null; } }));
+}
 A.gSignIn = async () => {
-  G.busy = true; G.busyAt = Date.now(); const my = (G.seq = (G.seq || 0) + 1); const tkp = gToken(true); render();
+  G.busy = true; G.busyAt = Date.now(); const my = (G.seq = (G.seq || 0) + 1), live = () => my === G.seq; const tkp = gToken(true, live); render();
   try {
-    const tk = await tkp, u = await (await fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers: { Authorization: "Bearer " + tk } })).json();
+    const tk = await tkp; if (!live()) return; /* signed out, reset or superseded: do nothing */
+    const ur = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers: { Authorization: "Bearer " + tk } }); if (!live()) return;
+    const u = await ur.json(); if (!live()) return;
     P.g = { email: u.email || "", name: u.name || "", cal: true, tasks: true, last: 0, dc: [], dt: [] }; P.acct = "google";
     if (!P.name.trim() && u.name) P.name = u.name; if (S.w && !S.w.name && u.name) S.w.name = u.name;
-    saveNow(); G.busy = false; render(); toast(t("Signed in"), u.email || ""); A.gSync();
+    beClear(); saveNow(); G.busy = false; render(); toast(t("Signed in"), u.email || ""); A.gSync();
+    beAuth(tk); /* not awaited: Google sign-in never waits for, or fails because of, the Worker */
   } catch (e) { if (my !== G.seq) return; G.busy = false; G.pend = null; render(); const cancel = /popup|closed|denied|access_denied|timeout|cancel/i.test((e && e.message) || ""); toast(cancel ? t("Google sign-in was cancelled") : t("Couldn’t sign in to Google"), cancel ? t("You can try again, or continue as a guest.") : t("Check your connection and that pop-ups are allowed.")); }
 };
 A.gOut = async () => {
   if (!(await confirmDlg(t("Sign out of Google?"), t("Synced items stay on this device."), t("Sign out"), true))) return;
+  gInvalidate();
   try { if (G.tok && window.google) google.accounts.oauth2.revoke(G.tok.t, () => {}); } catch (e) {}
-  G.tok = null; try { localStorage.removeItem("today.gtok"); } catch (e) {}
+  G.tok = null; try { localStorage.removeItem("today.gtok"); } catch (e) {} beClear();
   P.events.forEach((e) => { delete e.gid; delete e.dirty; }); P.todos.forEach((x) => { delete x.gid; delete x.gs; });
   P.g = null; P.acct = "guest"; saveNow(); render();
 };
