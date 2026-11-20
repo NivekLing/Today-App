@@ -4393,11 +4393,8 @@ const AV_IMG={dog:"data:image/webp;base64,UklGRthYAABXRUJQVlA4WAoAAAAQAAAAPwEAPw
 
 /* ---------- TEMPORARY DIAGNOSTICS (V35.1 diagnostic build) ----------
    On-device log only. Never transmitted. Records timing/state of the Google sign-in lifecycle; values are whitelisted (booleans, numbers, short code words) so tokens, codes, e-mails and IDs cannot be logged. */
-const APP_VERSION = "0.35.1b beta (diagnostic)";
-const DGS = { l: [], t0: Date.now(), n: { init: 0, req: 0, open: 0 }, key: "today.diag", sv: 0, mk: "today.diagmode", mode: "off", hs: [], gate: null, evAt: 0 };
-try { const m = localStorage.getItem(DGS.mk); if (m === "close" || m === "uniq") DGS.mode = m; } catch (e) {} /* experiment mode: off (default = V35 behaviour) | close | uniq; persists across restarts */
-const dgModeName = () => ({ off: "Off (V35 behaviour)", close: "Close stale window", uniq: "Unique window name" }[DGS.mode]);
-try { const o = JSON.parse(localStorage.getItem(DGS.key) || "[]"); if (Array.isArray(o)) DGS.l = o.filter((x) => typeof x === "string").slice(-400); } catch (e) {}
+const APP_VERSION = "0.35.1 beta (test build)", APP_NUM = "0.35.1";
+const DGS = { l: [], t0: Date.now(), n: { init: 0, req: 0, open: 0 }, key: "today.diag", sv: 0, hs: [], evAt: 0 };
 const dgV = (v) => (v && typeof v === "object" && typeof v.t === "string") ? v.t.replace(/ /g, "_") : (typeof v === "boolean" || typeof v === "number") ? v : (typeof v === "string" && /^[A-Za-z0-9_.:/\- ]{1,40}$/.test(v) && !/@/.test(v) && !/^(ya29|4\/|1\/\/)/.test(v)) ? v : "<hidden>";
 function DG(ev, o) {
   try {
@@ -4412,19 +4409,16 @@ function DG(ev, o) {
 const dgSnap = () => { try { return { pend: !!G.pend, busy: !!G.busy, cl: !!G.cl, tokOk: !!(G.tok && G.tok.exp - 60000 > Date.now()), signedIn: !!P.g, lib: !!(window.google && google.accounts && google.accounts.oauth2), vis: document.visibilityState, focus: document.hasFocus() }; } catch (e) { return {}; } };
 const dgT = (s, max) => { s = String(s == null ? "" : s).replace(/[^\s,&]*@[^\s,&]*/g, "<mail>").replace(/(ya29\.|1\/\/|4\/)[^\s,&]*/g, "<tok>").replace(/(token|code|secret|key|hint|state)=[^\s,&]*/gi, "$1=<x>").replace(/[^A-Za-z0-9=,_.:\/<>\- ]/g, "?").replace(/[A-Za-z0-9]{24,}/g, "<long>").slice(0, max || 80); return { t: s || "none" }; }; /* free text: only plain characters, long random-looking runs removed */
 const dgSafeMsg = (e) => { const m = e && (e.type || e.message || e.name); return typeof m === "string" ? m : "none"; };
-function dgState() { try { const s = dgSnap(); DGS.st.textContent = "pending=" + s.pend + "  busy=" + s.busy + "  client=" + s.cl + "  signedIn=" + s.signedIn + "  lib=" + s.lib + "  vis=" + s.vis + "  focus=" + s.focus + "  lines=" + DGS.l.length + "  mode=" + DGS.mode; } catch (e) {} }
+function dgState() { try { const s = dgSnap(); DGS.st.textContent = "pending=" + s.pend + "  busy=" + s.busy + "  client=" + s.cl + "  signedIn=" + s.signedIn + "  lib=" + s.lib + "  vis=" + s.vis + "  focus=" + s.focus + "  lines=" + DGS.l.length; } catch (e) {} }
 function dgUI() {
   if (DGS.ui || !document.body) return;
-  const css = document.createElement("style"); css.textContent = "#dgPill{position:fixed;top:max(6px,env(safe-area-inset-top));right:6px;z-index:99998;font:600 11px/1 system-ui,sans-serif;padding:6px 9px;border-radius:99px;border:1px solid #888;background:rgba(0,0,0,.65);color:#fff;opacity:.85}#dgPanel{position:fixed;inset:0;z-index:99999;background:#101010;color:#e8e8e8;display:none;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));font:13px system-ui,sans-serif}#dgPanel.on{display:flex}#dgPanel b{font-size:14px}#dgPanel textarea{flex:1;margin:8px 0;background:#000;color:#9f9;font:11px/1.35 ui-monospace,Menlo,monospace;border:1px solid #444;border-radius:8px;padding:8px;resize:none;min-height:0}#dgPanel .r{display:flex;gap:8px;flex-wrap:wrap}#dgPanel button{font:600 14px system-ui;padding:10px 12px;border-radius:10px;border:1px solid #666;background:#2a2a2a;color:#fff}#dgPanel small{opacity:.7}#dgPanel button[data-m].sel{background:#1f5f2a;border-color:#7d7}";
+  const css = document.createElement("style"); css.textContent = "#dgPill{position:fixed;top:max(6px,env(safe-area-inset-top));right:6px;z-index:99998;font:600 11px/1 system-ui,sans-serif;padding:6px 9px;border-radius:99px;border:1px solid #888;background:rgba(0,0,0,.65);color:#fff;opacity:.85}#dgPanel{position:fixed;inset:0;z-index:99999;background:#101010;color:#e8e8e8;display:none;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));font:13px system-ui,sans-serif}#dgPanel.on{display:flex}#dgPanel b{font-size:14px}#dgPanel textarea{flex:1;margin:8px 0;background:#000;color:#9f9;font:11px/1.35 ui-monospace,Menlo,monospace;border:1px solid #444;border-radius:8px;padding:8px;resize:none;min-height:0}#dgPanel .r{display:flex;gap:8px;flex-wrap:wrap}#dgPanel button{font:600 14px system-ui;padding:10px 12px;border-radius:10px;border:1px solid #666;background:#2a2a2a;color:#fff}#dgPanel small{opacity:.7}";
   document.head.appendChild(css);
   const pill = document.createElement("button"); pill.id = "dgPill"; pill.type = "button"; pill.textContent = "Diagnostics"; document.body.appendChild(pill);
   const pn = document.createElement("div"); pn.id = "dgPanel";
-  pn.innerHTML = '<b>Diagnostics — ver. ' + APP_VERSION + '</b><small>Stays on this device. Nothing is sent anywhere. Tokens, e-mails and IDs are never recorded.</small><small id="dgSt" style="margin:4px 0;font-family:ui-monospace,monospace"></small><textarea id="dgTa" readonly></textarea><div class="r"><button type="button" id="dgCopy">Copy log</button><button type="button" id="dgMark">Add marker</button><button type="button" id="dgClr">Clear</button><button type="button" id="dgClose">Close</button></div><div class="r" style="margin-top:8px"><small style="width:100%">Experiment (applies to the next sign-in; kept after restart):</small><button type="button" data-m="off">Off</button><button type="button" data-m="close">Close stale window</button><button type="button" data-m="uniq">Unique window name</button></div><small id="dgMsg" style="margin-top:6px"></small>';
+  pn.innerHTML = '<b>Diagnostics — ver. ' + APP_VERSION + '</b><small>Stays on this device. Nothing is sent anywhere. Tokens, e-mails and IDs are never recorded.</small><small id="dgSt" style="margin:4px 0;font-family:ui-monospace,monospace"></small><textarea id="dgTa" readonly></textarea><div class="r"><button type="button" id="dgCopy">Copy log</button><button type="button" id="dgMark">Add marker</button><button type="button" id="dgClr">Clear</button><button type="button" id="dgClose">Close</button></div><small id="dgMsg" style="margin-top:6px"></small>';
   document.body.appendChild(pn); DGS.ta = pn.querySelector("#dgTa"); DGS.st = pn.querySelector("#dgSt"); DGS.ui = pn;
   const msg = (m) => { pn.querySelector("#dgMsg").textContent = m; };
-  const paint = () => { pn.querySelectorAll("button[data-m]").forEach((b) => b.classList.toggle("sel", b.getAttribute("data-m") === DGS.mode)); pill.textContent = DGS.mode === "off" ? "Diagnostics" : "Diagnostics · " + DGS.mode; };
-  DGS.paint = paint; paint();
-  pn.querySelectorAll("button[data-m]").forEach((b) => b.addEventListener("click", () => { DGS.mode = b.getAttribute("data-m"); try { localStorage.setItem(DGS.mk, DGS.mode); } catch (e) {} DG("EXPERIMENT MODE SET", { mode: DGS.mode }); paint(); msg("Mode: " + dgModeName() + ". Force-restart the app before testing each mode."); }));
   const stop = (e) => { e.stopPropagation(); };
   [pill, pn].forEach((el) => ["click", "pointerdown", "touchstart"].forEach((n) => el.addEventListener(n, stop)));
   pill.addEventListener("click", () => { DGS.ta.value = DGS.l.join("\n"); pn.classList.add("on"); dgState(); DGS.ta.scrollTop = DGS.ta.scrollHeight; });
@@ -4432,45 +4426,27 @@ function dgUI() {
   pn.querySelector("#dgClr").addEventListener("click", () => { DGS.l = []; try { localStorage.removeItem(DGS.key); } catch (e) {} DG("log cleared"); msg("Cleared."); });
   pn.querySelector("#dgMark").addEventListener("click", () => { DG("MARKER (user pressed Add marker)"); msg("Marker added. Use it right after you close the Google window, and again before the retry tap."); });
   pn.querySelector("#dgCopy").addEventListener("click", async () => {
-    const txt = "Today ver. " + APP_VERSION + "\nexperiment mode: " + DGS.mode + "\nUA: " + (navigator.userAgent || "") + "\nstandalone=" + (navigator.standalone === true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches)) + "\n" + DGS.l.join("\n");
+    const txt = "Today ver. " + APP_VERSION + "\nUA: " + (navigator.userAgent || "") + "\nstandalone=" + (navigator.standalone === true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches)) + "\n" + DGS.l.join("\n");
     try { await navigator.clipboard.writeText(txt); msg("Copied. Paste it into a message to me."); return; } catch (e) {}
     try { DGS.ta.readOnly = false; DGS.ta.value = txt; DGS.ta.focus(); DGS.ta.select(); DGS.ta.setSelectionRange(0, txt.length); const ok = document.execCommand("copy"); DGS.ta.readOnly = true; msg(ok ? "Copied. Paste it into a message to me." : "Select all text in the box and copy it manually."); } catch (e) { msg("Select all text in the box and copy it manually."); }
   });
 }
-/* Experiment "close": close ONLY the window opened by an abandoned request (never an active one, never a foreign window). */
-function dgCloseStale(rq, reason) {
-  try {
-    if (DGS.mode !== "close" || !rq || !rq.win || rq.wClosed) return;
-    if (reason !== "popup_closed" && reason !== "cancelled") { DG("close skipped", { why: "reason", reason: dgT(reason, 20) }); return; }
-    const h = rq.win;
-    if (document.visibilityState !== "visible") { DG("close skipped", { n: rq.winN, why: "page not visible" }); return; }
-    if (G.pend && G.pend !== rq && G.pend.win === h) { DG("close skipped", { n: rq.winN, why: "handle in use by active request" }); return; }
-    rq.wClosed = true; let before = "err", threw = false; try { before = !!h.closed; } catch (e) {}
-    try { h.close(); } catch (e) { threw = true; }
-    const rd = () => { try { return !!h.closed; } catch (e) { return "err"; } };
-    DG("close() called on abandoned request window", { n: rq.winN, reason: dgT(reason, 20), closedBefore: before, threw, closedAfter: rd() });
-    setTimeout(() => DG("close() result after 300ms", { n: rq.winN, closed: rd() }), 300);
-  } catch (e) {}
-}
 (function dgInit() {
   try {
-    DG("---- app start ----", { app: APP_VERSION.replace(/[^0-9.b]/g, "").slice(0, 8), mode: DGS.mode, standalone: navigator.standalone === true || !!(window.matchMedia && matchMedia("(display-mode: standalone)").matches), vis: document.visibilityState });
+    DG("---- app start ----", { app: APP_NUM, standalone: navigator.standalone === true || !!(window.matchMedia && matchMedia("(display-mode: standalone)").matches), vis: document.visibilityState });
     ["visibilitychange", "pageshow", "pagehide", "focus", "blur", "freeze", "resume", "online", "offline"].forEach((n) => (n === "visibilitychange" ? document : window).addEventListener(n, () => { if (n === "blur" || (n === "visibilitychange" && document.visibilityState === "hidden")) DGS.evAt = performance.now(); DG("event " + n, { vis: document.visibilityState, focus: document.hasFocus() }); }, true));
     document.addEventListener("pointerdown", (e) => { const a = e.target && e.target.closest && e.target.closest("[data-a]"); if (a && !/^dg/.test(a.id || "")) DG("tap", { action: a.getAttribute("data-a") }); }, true);
     const wo = window.open; if (typeof wo === "function") window.open = function (u, n, f) {
-      /* wraps ONLY for logging; it changes an argument (window name) only in "uniq" mode, and only for the Google sign-in window opened by our own requestAccessToken() call */
-      const i = ++DGS.n.open, t0 = performance.now(); let r, host = "other", isG = false;
-      try { const x = new URL(u, location.href); host = x.hostname + x.pathname.slice(0, 20); isG = x.hostname === "accounts.google.com" && /^\/o\/oauth2\//.test(x.pathname); } catch (e) {}
-      const gate = DGS.gate && isG && t0 < DGS.gate.until ? DGS.gate : null; if (gate) DGS.gate = null;
-      let name2 = n, how = "unchanged";
-      if (gate && DGS.mode === "uniq") { if (typeof n === "string" && n && n.charAt(0) !== "_") { name2 = "today_gsi_" + i + "_" + Math.floor(Math.random() * 1e6); how = "renamed"; } else how = "not-needed"; }
-      DG("window.open called", { n: i, host: host.replace(/[^A-Za-z0-9.\/_-]/g, ""), ours: !!gate, mode: DGS.mode });
-      DG("window.open args", { n: i, targetType: typeof n, target: dgT(n, 40), features: dgT(f, 100), nameHandling: how });
-      try { r = how === "renamed" ? wo.call(this, u, name2, f) : wo.apply(this, arguments); } catch (e) { DG("window.open threw", { err: dgSafeMsg(e) }); throw e; }
+      /* logging only: passes every call through unchanged */
+      const i = ++DGS.n.open, t0 = performance.now(); let r, host = "other";
+      try { const x = new URL(u, location.href); host = x.hostname + x.pathname.slice(0, 20); } catch (e) {}
+      DG("window.open called", { n: i, host: host.replace(/[^A-Za-z0-9.\/_-]/g, "") });
+      DG("window.open args", { n: i, targetType: typeof n, target: dgT(n, 40), features: dgT(f, 100) });
+      try { r = wo.apply(this, arguments); } catch (e) { DG("window.open threw", { err: dgSafeMsg(e) }); throw e; }
       let same = "new"; try { for (const o of DGS.hs) if (o.h === r) { same = "n" + o.n; break; } } catch (e) {}
       let op = "na"; try { op = r ? (r.opener === window ? "self" : r.opener === null ? "null" : "other") : "na"; } catch (e) { op = "err"; }
       DG("window.open returned", { n: i, ms: Math.round(performance.now() - t0), handle: !!r, closed: r ? !!r.closed : "na", sameHandleAs: r ? same : "na", opener: op });
-      if (r) { DGS.hs.push({ h: r, n: i }); if (DGS.hs.length > 12) DGS.hs.shift(); if (gate && gate.rq) { gate.rq.win = r; gate.rq.winN = i; } }
+      if (r) { DGS.hs.push({ h: r, n: i }); if (DGS.hs.length > 12) DGS.hs.shift(); }
       setTimeout(() => DG("presented check (1.5s)", { n: i, presented: DGS.evAt >= t0 }), 1500);
       if (r) { let last = null, k = 0; const iv = setInterval(() => { let c; try { c = !!r.closed; } catch (e) { c = "err"; } if (c !== last) { DG("popup.closed changed", { n: i, closed: c }); last = c; } if (c === true || ++k > 150) clearInterval(iv); }, 1000); }
       return r;
@@ -4495,7 +4471,7 @@ function gLoadLib() {
     DG("gsi script loading");
     let s = document.getElementById("gsi"); if (!s) { s = document.createElement("script"); s.id = "gsi"; s.src = "https://accounts.google.com/gsi/client"; s.async = true; document.head.appendChild(s); }
     let dgSet = false; s.addEventListener("load", () => { dgSet = true; DG("gsi script loaded"); res(); }); s.addEventListener("error", () => { dgSet = true; DG("gsi script error"); s.remove(); rej(new Error("lib")); });
-    setTimeout(() => { if (!dgSet) DG("gsi load timeout 15s (script still not loaded)"); rej(new Error("timeout")); }, 15000); /* same timer and rejection as before; only the log is now conditional */
+    setTimeout(() => { if (!dgSet) DG("gsi load timeout 15s (script still not loaded)"); rej(new Error("timeout")); }, 15000);
   });
 }
 /* get a valid access token; interactive=true may open Google's sign-in popup (needs a tap) */
@@ -4511,6 +4487,21 @@ function gClient() {
   }));
   return cl;
 }
+/* iOS home-screen apps only (navigator.standalone is true only there). Google opens its sign-in window with a fixed per-page name (g_auth_token_window_<16 hex>). Once the user dismisses that window, WebKit keeps its browsing context alive and hands it back for the same name, so every later sign-in window is silently never shown until the app is restarted. Fix: give each request its own suffix. window.open is wrapped ONLY while requestAccessToken() runs (Google opens the window synchronously inside it) and is restored afterwards, also when it throws. Known limitation: dismissed windows are not closed, so a few can accumulate until the app is restarted. */
+const GW_PRE = "g_auth_token_window_";
+const gwHex = () => { let s = ""; try { const a = new Uint8Array(8); crypto.getRandomValues(a); for (const b of a) s += (b < 16 ? "0" : "") + b.toString(16); } catch (e) { s = ""; } while (s.length < 16) s += Math.floor(Math.random() * 16).toString(16); return s.slice(0, 16); };
+function gwRun(fn, note) {
+  if (navigator.standalone !== true || typeof window.open !== "function") return fn();
+  const orig = window.open;
+  const wrap = function (u, n, f) {
+    let nn = null;
+    try { if (typeof n === "string" && n.indexOf(GW_PRE) === 0) { const x = new URL(u, location.href); if (x.hostname === "accounts.google.com" && x.pathname.indexOf("/o/oauth2/") === 0) { nn = GW_PRE + gwHex(); if (nn === n) nn = GW_PRE + gwHex(); } } } catch (e) { nn = null; }
+    if (nn && note) { try { note(n, nn); } catch (e) {} }
+    return nn ? orig.call(this, u, nn, f) : orig.apply(this, arguments);
+  };
+  window.open = wrap;
+  try { return fn(); } finally { if (window.open === wrap) window.open = orig; }
+}
 async function gToken(interactive, alive) {
   DG("gToken start", { interactive: !!interactive, ...dgSnap() });
   if (G.tok && G.tok.exp - 60000 > Date.now()) return G.tok.t;
@@ -4522,14 +4513,14 @@ async function gToken(interactive, alive) {
     if (G.pend) { DG("previous request STILL PENDING -> cancelling it"); try { G.pend.fin(false, new Error("cancelled")); } catch (e) {} } else DG("no previous request pending");
     if (interactive) G.cl = null; /* always a fresh client for a new sign-in attempt, so a closed window never leaves it half-open */
     let done = false, ft = 0, tm = 0; const me = {};
-    const fin = (ok, v) => { if (done) return; DG("request finished", { ok: !!ok, reason: ok ? "token" : dgSafeMsg(v) }); if (DGS.gate && DGS.gate.rq === me) DGS.gate = null; if (!ok) dgCloseStale(me, dgSafeMsg(v)); done = true; clearTimeout(ft); clearTimeout(tm); removeEventListener("focus", onF); removeEventListener("visibilitychange", onF); removeEventListener("pageshow", onF); removeEventListener("pointerdown", onF, true); removeEventListener("touchstart", onF, true); if (!ok) G.cl = null; if (G.pend === me) G.pend = null; ok ? res(v) : rej(v); };
+    const fin = (ok, v) => { if (done) return; DG("request finished", { ok: !!ok, reason: ok ? "token" : dgSafeMsg(v) }); done = true; clearTimeout(ft); clearTimeout(tm); removeEventListener("focus", onF); removeEventListener("visibilitychange", onF); removeEventListener("pageshow", onF); removeEventListener("pointerdown", onF, true); removeEventListener("touchstart", onF, true); if (!ok) G.cl = null; if (G.pend === me) G.pend = null; ok ? res(v) : rej(v); };
     me.fin = fin; G.pend = me;
     /* if the popup is closed without GIS calling back, give up shortly after the window regains focus (or after 2 min) */
     const onF = () => { if (document.visibilityState === "hidden") return; DG("give-up timer armed (1.2s)"); clearTimeout(ft); ft = setTimeout(() => fin(false, new Error("popup_closed")), 1200); };
     tm = setTimeout(() => { DG("120s timeout reached"); fin(false, new Error("timeout")); }, 120000);
     /* a focus, a return to the page, or any tap inside the app means the sign-in window is gone (it would cover the app otherwise) */
     if (interactive) setTimeout(() => { if (!done) { addEventListener("focus", onF); addEventListener("visibilitychange", onF); addEventListener("pageshow", onF); addEventListener("pointerdown", onF, true); addEventListener("touchstart", onF, true); } }, 1200);
-    try { const cl = gClient(); me.cl = cl; DG("requestAccessToken CALL", { n: ++DGS.n.req, interactive: !!interactive, mode: DGS.mode }); if (interactive) DGS.gate = { rq: me, until: performance.now() + 1500 }; cl.requestAccessToken({ prompt: interactive && !P.g ? "select_account" : "", hint: P.g && P.g.email ? P.g.email : undefined }); DG("requestAccessToken returned"); }
+    try { const cl = gClient(); me.cl = cl; DG("requestAccessToken CALL", { n: ++DGS.n.req, interactive: !!interactive, nameFixActive: navigator.standalone === true }); gwRun(() => cl.requestAccessToken({ prompt: interactive && !P.g ? "select_account" : "", hint: P.g && P.g.email ? P.g.email : undefined }), (a, b2) => DG("window name changed", { from: dgT(a, 40), to: dgT(b2, 40) })); DG("requestAccessToken returned"); }
     catch (e) { DG("requestAccessToken THREW", { err: dgSafeMsg(e) }); fin(false, e); }
   });
 }
